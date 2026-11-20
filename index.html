@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>La mia guida all'Europa e alle organizzazioni internazionali · Giuseppe Castrovillari 5A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<style>
+  :root{
+    --parch:#efe2c3; --parch2:#e4d2a8; --ink:#3b2f22; --ink2:#6b5a44;
+    --sea:#a9c3c8; --gold:#d9a521; --panel:#f6ecd4; --eu:#1f3f8f; --un:#2f7fc1; --tab:58px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--parch);color:var(--ink);
+    font-family:Spectral,Georgia,serif;-webkit-tap-highlight-color:transparent}
+  a{color:var(--eu)}
+  button{font-family:inherit;color:inherit}
+
+  /* ---------- TAB BAR ---------- */
+  #tabs{position:fixed;left:0;right:0;bottom:0;height:calc(var(--tab) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);
+    display:flex;background:#2b2118;z-index:8;border-top:3px solid var(--gold)}
+  #tabs button{flex:1;min-width:0;border:0;background:none;color:#e9dcb9;font-size:10.5px;font-weight:600;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:2px;cursor:pointer;padding:0 2px;letter-spacing:.02em}
+  #tabs button span{font-size:19px;line-height:1}
+  #tabs button.on{color:#fff;background:linear-gradient(to top,rgba(217,165,33,.35),transparent)}
+  @media (min-width:821px){#tabs button{font-size:12.5px;flex-direction:row;gap:7px}}
+
+  /* ---------- VIEWS ---------- */
+  .view{position:fixed;left:0;right:0;top:0;bottom:calc(var(--tab) + env(safe-area-inset-bottom));overflow-y:auto;-webkit-overflow-scrolling:touch;display:none;
+    background:var(--parch);background-image:radial-gradient(circle at 15% 5%,rgba(255,255,255,.55),transparent 55%),
+      repeating-linear-gradient(0deg,rgba(120,90,50,.03) 0 2px,transparent 2px 4px)}
+  .view.on{display:block;animation:fadein .45s ease}
+  @keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .wrap{max-width:860px;margin:0 auto;padding:18px 16px 40px}
+  .hero{padding:26px 18px 22px;color:#fff;border-bottom:4px solid var(--gold);position:relative;overflow:hidden}
+  .hero h1{font-family:Cinzel,serif;font-weight:800;margin:0;font-size:clamp(22px,5.6vw,36px);line-height:1.12;letter-spacing:.03em}
+  .hero p{margin:8px 0 0;font-size:15px;opacity:.93;max-width:640px}
+  .hero .kick{font-family:Cinzel,serif;font-size:12px;letter-spacing:.18em;opacity:.85;text-transform:uppercase}
+  .hero.eu{background:linear-gradient(135deg,#1f3f8f,#14295e)}
+  .hero.un{background:linear-gradient(135deg,#2f7fc1,#1c4f7a)}
+  .hero.news{background:linear-gradient(135deg,#8a3324,#5a1f15)}
+  .hero.me{background:linear-gradient(135deg,#4c6e34,#2d4520)}
+  .hero.en{background:linear-gradient(135deg,#3F7E44,#1f4a24)}
+  .vocab{width:100%;border-collapse:collapse;font-size:14.5px}
+  .vocab td{padding:7px 8px;border-bottom:1px dashed #cdb98f}
+  .vocab td:first-child{font-weight:600;color:#1f4a24}
+  .vocab td:last-child{color:var(--ink2);font-style:italic}
+  .big{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .big div{background:#3F7E44;color:#fff;border-radius:10px;padding:12px;border:2px solid #2b2118;box-shadow:2px 2px 0 #2b2118}
+  .big b{display:block;font-family:Cinzel,serif;font-size:24px}
+  .big span{font-size:13px;line-height:1.35}
+  .essay{background:#fffaf0;border:2px solid #2b2118;border-radius:12px;padding:20px 20px 16px;box-shadow:4px 4px 0 #2b2118;font-size:16.5px;line-height:1.7}
+  .essay p{margin:0 0 14px;text-indent:1.4em}
+  .essay p:first-child::first-letter{font-family:Cinzel,serif;font-size:2.6em;float:left;line-height:.9;margin:4px 8px 0 0;color:#4c6e34}
+  .essay p:first-child{text-indent:0}
+  .essay .essay-sign{text-align:right;text-indent:0;font-family:Cinzel,serif;font-weight:800;font-size:16px;margin:18px 0 0}
+  .essay .essay-sign span{font-family:Spectral,serif;font-weight:400;font-size:14px;color:var(--ink2)}
+  .hero.comp{background:linear-gradient(135deg,#6d4a7f,#3f2a4a)}
+  .hero.home{background:linear-gradient(160deg,#14295e 0%,#1f3f8f 55%,#2f7fc1 100%);padding:34px 18px 30px}
+  .stars{position:absolute;right:-30px;top:-30px;width:190px;height:190px;opacity:.22}
+  h2.sec{font-family:Cinzel,serif;font-size:19px;letter-spacing:.06em;margin:28px 0 10px;padding-bottom:6px;border-bottom:2px solid #2b2118;display:flex;gap:9px;align-items:center}
+  p.lead{font-size:16px;line-height:1.55}
+  .card2{background:#fbf5e6;border:2px solid #2b2118;border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:3px 3px 0 #2b2118}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+  .muted{color:var(--ink2);font-size:13.5px}
+  .pill{display:inline-block;border:1.5px solid #2b2118;border-radius:12px;padding:2px 9px;font-size:12px;font-weight:600;margin:2px 3px 2px 0;background:#f3e3b8}
+
+  /* home tiles */
+  .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:16px}
+  .tile{border:2.5px solid #2b2118;border-radius:12px;padding:14px 12px;color:#fff;cursor:pointer;text-align:left;box-shadow:3px 3px 0 #2b2118;
+    display:flex;flex-direction:column;gap:6px;min-height:118px;transition:transform .15s}
+  .tile:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #2b2118}
+  .tile b{font-family:Cinzel,serif;font-size:15px;letter-spacing:.03em}
+  .tile i{font-style:normal;font-size:28px}
+  .tile small{font-size:12.5px;opacity:.92;line-height:1.3}
+  .namefield{margin-top:14px;display:flex;align-items:center;gap:8px;font-size:14px;flex-wrap:wrap}
+  .namefield input{flex:1;min-width:180px;border:none;border-bottom:2px dashed rgba(255,255,255,.7);background:transparent;color:#fff;font:600 16px Spectral,serif;padding:4px 2px;outline:none}
+  .namefield input::placeholder{color:rgba(255,255,255,.6)}
+
+  /* timeline */
+  .tl{position:relative;margin:8px 0 0 8px;padding-left:22px;border-left:3px solid var(--eu)}
+  .tl .ev{position:relative;margin:0 0 14px;opacity:0;transform:translateX(-10px);transition:all .5s ease}
+  .tl .ev.in{opacity:1;transform:none}
+  .tl .ev::before{content:"★";position:absolute;left:-35px;top:0;width:24px;height:24px;border-radius:50%;background:var(--eu);color:var(--gold);
+    font-size:13px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 0 0 2px var(--eu)}
+  .tl .y{font-family:Cinzel,serif;font-weight:800;color:var(--eu);font-size:16px}
+  .tl .t{font-size:15px;line-height:1.45}
+
+  /* values */
+  .vals{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+  .val{background:var(--eu);color:#fff;border-radius:10px;padding:10px;font-weight:600;font-size:14px;border:2px solid #2b2118;display:flex;gap:8px;align-items:center}
+  .val span{font-size:20px}
+  ul.rights{list-style:none;padding:0;margin:0}
+  ul.rights li{padding:8px 10px 8px 36px;position:relative;border-bottom:1px dashed #cdb98f;font-size:15px;line-height:1.4}
+  ul.rights li::before{content:"✔";position:absolute;left:8px;top:7px;color:#fff;background:var(--eu);width:20px;height:20px;border-radius:50%;font-size:11px;display:flex;align-items:center;justify-content:center}
+
+  /* institution / organ cards */
+  details.inst{background:#fbf5e6;border:2px solid #2b2118;border-radius:12px;margin:10px 0;box-shadow:3px 3px 0 #2b2118;overflow:hidden}
+  details.inst summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;align-items:center;gap:12px}
+  details.inst summary::-webkit-details-marker{display:none}
+  details.inst .ic{flex:0 0 46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid #2b2118}
+  details.inst .nm{flex:1}
+  details.inst .nm b{font-family:Cinzel,serif;font-size:15.5px;display:block;line-height:1.2}
+  details.inst .nm small{color:var(--ink2);font-size:13px}
+  details.inst .arr{font-size:18px;transition:transform .3s}
+  details.inst[open] .arr{transform:rotate(90deg)}
+  details.inst .body{padding:0 14px 14px;animation:fadein .4s ease}
+  .facts{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;margin:4px 0 8px}
+  .facts dt{font-weight:600;color:var(--ink2);text-transform:uppercase;font-size:11.5px;letter-spacing:.05em;padding-top:2px}
+  .facts dd{margin:0}
+  .body ul{margin:6px 0 0;padding-left:20px;font-size:14.5px;line-height:1.45}
+  .lead-box{display:flex;align-items:center;gap:10px;background:#f3e3b8;border-left:4px solid var(--gold);border-radius:6px;padding:7px 10px;margin-top:8px;font-size:14px}
+
+  /* decision steps */
+  .steps{display:flex;flex-direction:column;gap:0}
+  .step{display:flex;gap:12px;align-items:flex-start;background:#fbf5e6;border:2px solid #2b2118;border-radius:10px;padding:10px 12px}
+  .step .n{flex:0 0 30px;height:30px;border-radius:50%;background:var(--eu);color:#fff;font-family:Cinzel,serif;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .step b{display:block}
+  .step .who{font-size:12px;font-weight:600;color:var(--eu);text-transform:uppercase;letter-spacing:.05em}
+  .down{text-align:center;font-size:18px;color:var(--eu);line-height:1.2;margin:2px 0}
+
+  /* youth */
+  .yth{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+  .yth .c{background:#fbf5e6;border:2px solid #2b2118;border-radius:10px;padding:10px 12px;box-shadow:2px 2px 0 #2b2118}
+  .yth .c b{font-family:Cinzel,serif;font-size:14.5px}
+  .yth .c .age{float:right;font-size:11px;font-weight:600;background:var(--eu);color:#fff;border-radius:8px;padding:1px 7px}
+  .yth .c p{margin:6px 0 0;font-size:14px;line-height:1.4}
+
+  /* SDG */
+  .sdg{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:6px}
+  .sdg div{color:#fff;border-radius:6px;padding:7px;min-height:84px;font-size:11.5px;font-weight:600;line-height:1.2;display:flex;flex-direction:column;gap:3px}
+  .sdg div b{font-family:Cinzel,serif;font-size:20px}
+
+  /* news */
+  .cand{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+  .cand div{background:#fbf5e6;border:1.5px solid #2b2118;border-radius:8px;padding:8px 10px;font-size:14px}
+  .cand div small{display:block;color:var(--ink2);font-size:12.5px}
+  .pv{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media (max-width:600px){.pv{grid-template-columns:1fr}}
+  .pv .card2 h4{margin:0 0 6px;font-family:Cinzel,serif;font-size:14px}
+  .q{background:#2b2118;color:#f6ecd4;border-radius:10px;padding:12px 14px;margin:10px 0;font-size:15px;line-height:1.5}
+  .q b{color:var(--gold);font-family:Cinzel,serif}
+
+  /* reflection */
+  textarea{width:100%;min-height:280px;border:2px solid #2b2118;border-radius:10px;padding:12px;background:#fffaf0;
+    font:16px/1.6 Spectral,Georgia,serif;color:var(--ink);resize:vertical;box-shadow:inset 0 2px 6px rgba(0,0,0,.06)}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+  .btn{border:2px solid #2b2118;border-radius:8px;background:#f9f1dc;padding:8px 14px;font-weight:600;font-size:14px;cursor:pointer;box-shadow:2px 2px 0 #2b2118}
+  .btn.pri{background:#4c6e34;color:#fff}
+  .btn:active{transform:translate(2px,2px);box-shadow:none}
+  .chips2{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+  .chips2 button{border:1.5px solid #2b2118;border-radius:14px;background:#f3e3b8;padding:5px 10px;font-size:13.5px;cursor:pointer}
+
+  /* competences */
+  .nuc{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+  .nuc .card2{margin:0}
+  .nuc h4{margin:0 0 4px;font-family:Cinzel,serif;font-size:15px}
+  table.kc{width:100%;border-collapse:separate;border-spacing:0 6px;font-size:14.5px}
+  table.kc td{background:#fbf5e6;border-top:1.5px solid #2b2118;border-bottom:1.5px solid #2b2118;padding:9px 10px;vertical-align:top;line-height:1.4}
+  table.kc td:first-child{border-left:1.5px solid #2b2118;border-radius:8px 0 0 8px;width:38%;font-weight:600}
+  table.kc td:last-child{border-right:1.5px solid #2b2118;border-radius:0 8px 8px 0}
+  table.kc .n{display:inline-flex;width:22px;height:22px;border-radius:50%;background:#6d4a7f;color:#fff;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:12px;margin-right:6px}
+  @media (max-width:600px){table.kc td{display:block;width:auto!important;border-radius:0!important;border-left:1.5px solid #2b2118;border-right:1.5px solid #2b2118}
+    table.kc td:first-child{border-radius:8px 8px 0 0!important;border-bottom:none}table.kc td:last-child{border-radius:0 0 8px 8px!important;border-top:1px dashed #cdb98f}}
+  .check{list-style:none;padding:0;margin:0}
+  .check li{display:flex;gap:10px;align-items:flex-start;padding:9px 4px;border-bottom:1px dashed #cdb98f;font-size:15px;cursor:pointer}
+  .check li .bx{flex:0 0 24px;height:24px;border-radius:6px;border:2px solid #2b2118;background:#4c6e34;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px}
+  .sign{text-align:center;font-family:Cinzel,serif;font-size:13px;letter-spacing:.06em;color:var(--ink2);margin:26px 0 0;padding-top:12px;border-top:2px solid #2b2118}
+  .src{font-size:13px;color:var(--ink2);line-height:1.6;margin-top:24px;border-top:1px solid #cdb98f;padding-top:10px}
+  .src a{color:var(--ink2)}
+
+  /* ---------- MAP VIEW (from v1) ---------- */
+  #v-mappa{background:var(--sea);overflow:hidden}
+  svg#map{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+  svg#map:active{cursor:grabbing}
+  #v-mappa header{position:absolute;top:0;left:0;right:0;padding:10px 14px 18px;pointer-events:none;
+    background:linear-gradient(to bottom,rgba(59,47,34,.82),rgba(59,47,34,0));color:#f6ecd4;z-index:5}
+  #v-mappa header h1{margin:0;font-family:Cinzel,serif;font-weight:800;font-size:clamp(17px,4.4vw,26px);letter-spacing:.08em}
+  #v-mappa header p{margin:2px 0 0;font-size:13px;opacity:.9;font-style:italic}
+  .hbtn{pointer-events:auto;position:absolute;top:10px;right:12px;width:36px;height:36px;border-radius:50%;
+    border:2px solid #f6ecd4;background:rgba(59,47,34,.6);color:#f6ecd4;font-family:Cinzel,serif;font-size:18px;cursor:pointer}
+  .land{fill:#d9c9a3;stroke:#a8946c;stroke-width:.5;vector-effect:non-scaling-stroke}
+  .nato{stroke:#2b2118;stroke-width:1.3;vector-effect:non-scaling-stroke;cursor:pointer;transition:opacity .5s, filter .3s}
+  .nato:hover{filter:brightness(1.12)}
+  .dim .nato:not(.sel){opacity:.28}
+  .dim .land{opacity:.5}
+  .nato.sel{stroke:var(--gold);stroke-width:3;filter:drop-shadow(0 0 4px rgba(217,165,33,.9))}
+  .route{fill:none;stroke:#5b4a36;stroke-width:1.6;stroke-dasharray:6 5;vector-effect:non-scaling-stroke;opacity:.7}
+  .token circle{stroke:#2b2118;stroke-width:1.5}
+  .token text{font-family:Cinzel,serif;font-weight:800;font-size:9px;fill:#fff;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+  .token{cursor:pointer;transition:opacity .4s}
+  .dim .token{opacity:.15}
+  .dim .token.sel{opacity:1}
+  #strip{position:absolute;left:0;right:0;bottom:0;padding:10px;display:flex;gap:6px;overflow-x:auto;z-index:4;
+    background:linear-gradient(to top,rgba(59,47,34,.75),rgba(59,47,34,0));scrollbar-width:none}
+  #strip::-webkit-scrollbar{display:none}
+  .chip{flex:0 0 auto;border:2px solid #2b2118;border-radius:16px;padding:5px 10px;font-family:Spectral,serif;
+    font-size:13px;font-weight:600;color:#fff;cursor:pointer;white-space:nowrap;box-shadow:0 2px 0 #2b2118}
+  .chip:active{transform:translateY(2px);box-shadow:none}
+  #panel{position:fixed;z-index:10;background:var(--panel);
+    background-image:radial-gradient(circle at 20% 10%,rgba(255,255,255,.5),transparent 60%),repeating-linear-gradient(0deg,rgba(120,90,50,.035) 0 2px,transparent 2px 4px);
+    box-shadow:0 -6px 30px rgba(0,0,0,.35);border:3px solid #2b2118;transition:transform .55s cubic-bezier(.2,.9,.25,1);overflow-y:auto;-webkit-overflow-scrolling:touch}
+  @media (max-width:820px){#panel{left:0;right:0;bottom:0;height:62%;border-radius:18px 18px 0 0;border-bottom:none;transform:translateY(105%)}#panel.open{transform:translateY(0)}}
+  @media (min-width:821px){#panel{top:0;right:0;bottom:calc(var(--tab) + env(safe-area-inset-bottom));width:430px;border-right:none;border-top:none;border-bottom:none;transform:translateX(105%)}#panel.open{transform:translateX(0)}}
+  .pin{padding:14px 18px 40px}
+  .grab{width:44px;height:5px;border-radius:3px;background:#b9a57d;margin:0 auto 10px}
+  .ptop{display:flex;gap:14px;align-items:center}
+  .card{flex:0 0 112px;height:140px;border:3px solid #2b2118;border-radius:10px;background:#f9f1dc;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:6px 4px;box-shadow:3px 3px 0 #2b2118;animation:flip .7s ease}
+  .card svg{width:100px;height:100px}
+  .card .cy{font-family:Cinzel,serif;font-size:10px;font-weight:800;letter-spacing:.05em}
+  @keyframes flip{from{transform:rotateY(90deg) scale(.6)}to{transform:none}}
+  .ptitle h2{margin:0;font-family:Cinzel,serif;font-weight:800;font-size:24px;line-height:1.1}
+  .ptitle .sub{font-size:13px;color:var(--ink2);margin-top:4px}
+  .badge{display:inline-block;color:#fff;font-size:11px;font-weight:600;border-radius:10px;padding:2px 8px;margin-top:6px;border:1.5px solid #2b2118}
+  .xbtn{position:sticky;top:0;float:right;width:34px;height:34px;border-radius:50%;border:2px solid #2b2118;background:#f9f1dc;font-size:18px;cursor:pointer;z-index:2;margin:-4px -6px 0 0}
+  #panel h3{font-family:Cinzel,serif;font-size:14px;letter-spacing:.08em;margin:20px 0 8px;padding-bottom:4px;border-bottom:2px solid #2b2118;display:flex;gap:8px;align-items:center}
+  .leaders{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .leader{border:2px solid #2b2118;border-radius:8px;padding:8px;background:#fbf5e6}
+  .leader .r{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2)}
+  .leader .n{font-weight:600;font-size:15px;margin-top:2px}
+  .note{font-size:13px;font-style:italic;margin-top:8px;background:#f3e3b8;border-left:4px solid var(--gold);padding:6px 8px;border-radius:4px}
+  ol.items{list-style:none;padding:0;margin:0;counter-reset:i}
+  ol.items li{position:relative;padding:8px 8px 8px 40px;margin-bottom:6px;border-radius:8px;background:#fbf5e6;border:1.5px solid #cdb98f;font-size:14.5px;line-height:1.4;opacity:0;animation:rise .45s ease forwards}
+  ol.items li::before{counter-increment:i;content:counter(i);position:absolute;left:8px;top:8px;width:24px;height:24px;border-radius:50%;color:#fff;font-family:Cinzel,serif;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;border:1.5px solid #2b2118}
+  ol.prob li::before{background:#9c3a2a}
+  ol.sol li::before{background:#4c6e34}
+  ol.items li b{display:block;font-size:14.5px}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .nav{display:flex;justify-content:space-between;gap:8px;margin-top:18px}
+  .nav button{flex:1;border:2px solid #2b2118;border-radius:8px;background:#f9f1dc;padding:8px;font-weight:600;font-size:14px;cursor:pointer;box-shadow:2px 2px 0 #2b2118}
+  .disc{font-size:12px;color:var(--ink2);font-style:italic;margin-top:16px;line-height:1.4}
+  #info{position:fixed;inset:0;z-index:20;background:rgba(30,22,14,.55);display:none;align-items:center;justify-content:center;padding:16px}
+  #info.show{display:flex}
+  #info .box{background:var(--panel);border:3px solid #2b2118;border-radius:14px;max-width:460px;width:100%;max-height:85%;overflow:auto;padding:16px 18px;box-shadow:5px 5px 0 #2b2118}
+  #info h2{font-family:Cinzel,serif;margin:0 0 8px;font-size:20px}
+  .leg{display:flex;align-items:center;gap:8px;font-size:14px;margin:5px 0}
+  .leg i{width:22px;height:14px;border:1.5px solid #2b2118;border-radius:3px;display:inline-block}
+  #msg{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);background:var(--panel);border:2px solid #2b2118;border-radius:10px;padding:12px 16px;font-family:Cinzel,serif;font-size:15px;z-index:3;text-align:center;max-width:80%}
+  .toast{position:fixed;left:50%;bottom:calc(var(--tab) + 18px);transform:translateX(-50%);background:#2b2118;color:#fff;padding:8px 14px;border-radius:20px;font-size:14px;z-index:30;opacity:0;transition:opacity .3s;pointer-events:none}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- ================= HOME ================= -->
+<section class="view" id="v-home">
+  <div class="hero home">
+    <svg class="stars" viewBox="-100 -100 200 200"><g fill="#d9a521"><polygon points="70.0,-12.0 72.9,-4.0 81.4,-3.7 74.8,1.5 77.1,9.7 70.0,5.0 62.9,9.7 65.2,1.5 58.6,-3.7 67.1,-4.0"/><polygon points="60.6,23.0 63.6,31.0 72.0,31.3 65.4,36.5 67.7,44.7 60.6,40.0 53.6,44.7 55.9,36.5 49.2,31.3 57.7,31.0"/><polygon points="35.0,48.6 37.9,56.6 46.4,56.9 39.8,62.2 42.1,70.3 35.0,65.6 27.9,70.3 30.2,62.2 23.6,56.9 32.1,56.6"/><polygon points="0.0,58.0 2.9,66.0 11.4,66.3 4.8,71.5 7.1,79.7 0.0,75.0 -7.1,79.7 -4.8,71.5 -11.4,66.3 -2.9,66.0"/><polygon points="-35.0,48.6 -32.1,56.6 -23.6,56.9 -30.2,62.2 -27.9,70.3 -35.0,65.6 -42.1,70.3 -39.8,62.2 -46.4,56.9 -37.9,56.6"/><polygon points="-60.6,23.0 -57.7,31.0 -49.2,31.3 -55.9,36.5 -53.6,44.7 -60.6,40.0 -67.7,44.7 -65.4,36.5 -72.0,31.3 -63.6,31.0"/><polygon points="-70.0,-12.0 -67.1,-4.0 -58.6,-3.7 -65.2,1.5 -62.9,9.7 -70.0,5.0 -77.1,9.7 -74.8,1.5 -81.4,-3.7 -72.9,-4.0"/><polygon points="-60.6,-47.0 -57.7,-39.0 -49.2,-38.7 -55.9,-33.5 -53.6,-25.3 -60.6,-30.0 -67.7,-25.3 -65.4,-33.5 -72.0,-38.7 -63.6,-39.0"/><polygon points="-35.0,-72.6 -32.1,-64.7 -23.6,-64.3 -30.2,-59.1 -27.9,-50.9 -35.0,-55.6 -42.1,-50.9 -39.8,-59.1 -46.4,-64.3 -37.9,-64.7"/><polygon points="-0.0,-82.0 2.9,-74.0 11.4,-73.7 4.8,-68.5 7.1,-60.3 -0.0,-65.0 -7.1,-60.3 -4.8,-68.5 -11.4,-73.7 -2.9,-74.0"/><polygon points="35.0,-72.6 37.9,-64.7 46.4,-64.3 39.8,-59.1 42.1,-50.9 35.0,-55.6 27.9,-50.9 30.2,-59.1 23.6,-64.3 32.1,-64.7"/><polygon points="60.6,-47.0 63.6,-39.0 72.0,-38.7 65.4,-33.5 67.7,-25.3 60.6,-30.0 53.6,-25.3 55.9,-33.5 49.2,-38.7 57.7,-39.0"/></g></svg>
+    <div class="kick">Educazione civica · Io cittadino europeo e del mondo</div>
+    <h1>La mia guida all'Europa e alle organizzazioni internazionali</h1>
+    <p>Istituzioni dell'Unione europea, ONU e agenzie internazionali, NATO, un approfondimento d'attualità e la mia riflessione su cosa significa essere cittadini europei e del mondo.</p>
+    <div class="namefield">✍ Realizzato da <b style="font-size:17px">Giuseppe Castrovillari</b> · Classe 5A</div>
+  </div>
+  <div class="wrap">
+    <div class="tiles">
+      <button class="tile" style="background:var(--eu)" data-go="ue"><i>🇪🇺</i><b>Unione europea</b><small>Nascita, tappe, valori, diritti, le 7 istituzioni, come nasce una legge, opportunità per i giovani</small></button>
+      <button class="tile" style="background:var(--un)" data-go="onu"><i>🌍</i><b>Organizzazioni internazionali</b><small>ONU e i suoi organi, OMS, UNESCO, NATO; pace, diritti umani e Agenda 2030</small></button>
+      <button class="tile" style="background:#5b7f3a" data-go="mappa"><i>🗺️</i><b>Mappa NATO</b><small>Tabellone in stile Risiko: tocca un Paese alleato per vederne vertici, problemi e soluzioni</small></button>
+      <button class="tile" style="background:#8a3324" data-go="attualita"><i>📰</i><b>Approfondimento</b><small>Chi guiderà l'ONU? La scelta del 10° Segretario generale</small></button>
+      <button class="tile" style="background:#4c6e34" data-go="riflessione"><i>✍️</i><b>La mia riflessione</b><small>«Cittadino d'Europa, cittadino del mondo»: cosa significa per me</small></button>
+      <button class="tile" style="background:#6d4a7f" data-go="competenze"><i>🎯</i><b>Competenze</b><small>Nuclei di Educazione civica e competenze chiave europee attivate</small></button>
+    </div>
+    <h2 class="sec">📌 La consegna</h2>
+    <div class="card2">
+      <p style="margin:0 0 8px"><b>Denominazione:</b> «La mia guida all'Europa e alle organizzazioni internazionali»</p>
+      <p style="margin:0 0 6px"><b>Descrizione:</b> ogni studente realizza individualmente un prodotto digitale che presenta:</p>
+      <ul class="check" id="checklist">
+        <li data-go="ue"><span class="bx">✓</span>Una o più istituzioni dell'Unione europea (organi e funzioni)</li>
+        <li data-go="onu"><span class="bx">✓</span>Una o più organizzazioni internazionali (finalità e competenze)</li>
+        <li data-go="attualita"><span class="bx">✓</span>Un approfondimento su una tematica di attualità</li>
+        <li data-go="riflessione"><span class="bx">✓</span>Una riflessione personale sul significato di essere cittadino europeo e globale</li>
+      </ul>
+    </div>
+    <p class="muted">Dati verificati al 19 novembre 2026. Tocca le sezioni qui sopra o usa la barra in basso.</p>
+  </div>
+</section>
+
+<!-- ================= UE ================= -->
+<section class="view" id="v-ue">
+  <div class="hero eu">
+    <svg class="stars" viewBox="-100 -100 200 200"><g fill="#d9a521"><polygon points="70.0,-12.0 72.9,-4.0 81.4,-3.7 74.8,1.5 77.1,9.7 70.0,5.0 62.9,9.7 65.2,1.5 58.6,-3.7 67.1,-4.0"/><polygon points="60.6,23.0 63.6,31.0 72.0,31.3 65.4,36.5 67.7,44.7 60.6,40.0 53.6,44.7 55.9,36.5 49.2,31.3 57.7,31.0"/><polygon points="35.0,48.6 37.9,56.6 46.4,56.9 39.8,62.2 42.1,70.3 35.0,65.6 27.9,70.3 30.2,62.2 23.6,56.9 32.1,56.6"/><polygon points="0.0,58.0 2.9,66.0 11.4,66.3 4.8,71.5 7.1,79.7 0.0,75.0 -7.1,79.7 -4.8,71.5 -11.4,66.3 -2.9,66.0"/><polygon points="-35.0,48.6 -32.1,56.6 -23.6,56.9 -30.2,62.2 -27.9,70.3 -35.0,65.6 -42.1,70.3 -39.8,62.2 -46.4,56.9 -37.9,56.6"/><polygon points="-60.6,23.0 -57.7,31.0 -49.2,31.3 -55.9,36.5 -53.6,44.7 -60.6,40.0 -67.7,44.7 -65.4,36.5 -72.0,31.3 -63.6,31.0"/><polygon points="-70.0,-12.0 -67.1,-4.0 -58.6,-3.7 -65.2,1.5 -62.9,9.7 -70.0,5.0 -77.1,9.7 -74.8,1.5 -81.4,-3.7 -72.9,-4.0"/><polygon points="-60.6,-47.0 -57.7,-39.0 -49.2,-38.7 -55.9,-33.5 -53.6,-25.3 -60.6,-30.0 -67.7,-25.3 -65.4,-33.5 -72.0,-38.7 -63.6,-39.0"/><polygon points="-35.0,-72.6 -32.1,-64.7 -23.6,-64.3 -30.2,-59.1 -27.9,-50.9 -35.0,-55.6 -42.1,-50.9 -39.8,-59.1 -46.4,-64.3 -37.9,-64.7"/><polygon points="-0.0,-82.0 2.9,-74.0 11.4,-73.7 4.8,-68.5 7.1,-60.3 -0.0,-65.0 -7.1,-60.3 -4.8,-68.5 -11.4,-73.7 -2.9,-74.0"/><polygon points="35.0,-72.6 37.9,-64.7 46.4,-64.3 39.8,-59.1 42.1,-50.9 35.0,-55.6 27.9,-50.9 30.2,-59.1 23.6,-64.3 32.1,-64.7"/><polygon points="60.6,-47.0 63.6,-39.0 72.0,-38.7 65.4,-33.5 67.7,-25.3 60.6,-30.0 53.6,-25.3 55.9,-33.5 49.2,-38.7 57.7,-39.0"/></g></svg>
+    <div class="kick">Sezione 1 · Costituzione e cittadinanza</div>
+    <h1>L'Unione europea</h1>
+    <p>27 Stati, circa 450 milioni di cittadini, 24 lingue ufficiali. Motto: <i>«Unita nella diversità»</i>.</p>
+  </div>
+  <div class="wrap">
+    <h2 class="sec">🌱 Come è nata</h2>
+    <p class="lead">Dopo due guerre mondiali, alcuni Paesi europei decisero di mettere in comune le risorse che servivano a fare la guerra, il carbone e l'acciaio, perché un nuovo conflitto tra loro diventasse <i>«materialmente impossibile»</i> (Dichiarazione Schuman). Tra i «padri fondatori» ci sono Robert Schuman, Jean Monnet, Konrad Adenauer, l'italiano Alcide De Gasperi e Altiero Spinelli, che nel 1941, confinato a Ventotene, scrisse con Ernesto Rossi il <i>Manifesto per un'Europa libera e unita</i>.</p>
+    <h2 class="sec">🕰️ Le tappe dell'integrazione</h2>
+    <div class="tl" id="timeline"></div>
+
+    <h2 class="sec">⚖️ I valori (art. 2 TUE)</h2>
+    <div class="vals" id="values"></div>
+    <p class="muted">Uno Stato che viola gravemente questi valori può vedersi sospendere alcuni diritti, tra cui il voto nel Consiglio (art. 7 TUE).</p>
+
+    <h2 class="sec">🪪 Cittadinanza e diritti europei</h2>
+    <p class="lead">Chi ha la cittadinanza di uno Stato membro è automaticamente <b>cittadino dell'Unione</b>: la cittadinanza europea <i>si aggiunge</i> a quella nazionale e non la sostituisce (art. 20 TFUE, introdotta dal Trattato di Maastricht). I diritti fondamentali sono raccolti nella <b>Carta dei diritti fondamentali dell'UE</b> (Nizza, 2000), vincolante dal 2009.</p>
+    <div class="card2"><ul class="rights" id="rights"></ul></div>
+
+    <h2 class="sec">🏛️ Le 7 istituzioni</h2>
+    <p class="muted">Tocca una scheda per aprirla.</p>
+    <div id="insts"></div>
+
+    <h2 class="sec">📜 Come nasce una legge europea</h2>
+    <p class="lead">La maggior parte delle leggi UE segue la <b>procedura legislativa ordinaria</b>: la Commissione propone, Parlamento e Consiglio decidono su un piano di parità.</p>
+    <div class="steps" id="steps"></div>
+    <div class="card2" style="margin-top:14px">
+      <b>Gli atti giuridici</b>
+      <ul style="margin:6px 0 0;padding-left:20px;font-size:14.5px;line-height:1.5">
+        <li><b>Regolamento</b>: obbligatorio e direttamente applicabile in tutti gli Stati (es. il GDPR sulla privacy).</li>
+        <li><b>Direttiva</b>: fissa un obiettivo; ogni Stato sceglie come raggiungerlo con una legge nazionale (recepimento).</li>
+        <li><b>Decisione</b>: vincolante solo per i destinatari.</li>
+        <li><b>Raccomandazioni e pareri</b>: non vincolanti.</li>
+      </ul>
+    </div>
+
+    <h2 class="sec">🎒 Opportunità per i giovani</h2>
+    <div class="yth" id="youth"></div>
+
+    <div class="src">Fonti: <a href="https://european-union.europa.eu/index_it">european-union.europa.eu</a> · <a href="https://www.europarl.europa.eu/portal/it">europarl.europa.eu</a> · <a href="https://www.consilium.europa.eu/it/">consilium.europa.eu</a> · <a href="https://commission.europa.eu/index_it">commission.europa.eu</a> · <a href="https://curia.europa.eu">curia.europa.eu</a> · <a href="https://www.ecb.europa.eu">ecb.europa.eu</a> · <a href="https://www.eca.europa.eu">eca.europa.eu</a> · <a href="https://youth.europa.eu/home_it">youth.europa.eu</a></div>
+  </div>
+</section>
+
+<!-- ================= ONU ================= -->
+<section class="view" id="v-onu">
+  <div class="hero un">
+    <div class="kick">Sezione 2 · Cooperazione globale</div>
+    <h1>Le organizzazioni internazionali</h1>
+    <p>Gli Stati collaborano per obiettivi che nessuno può raggiungere da solo: pace, salute, istruzione, ambiente, sicurezza.</p>
+  </div>
+  <div class="wrap">
+    <h2 class="sec">🇺🇳 L'Organizzazione delle Nazioni Unite</h2>
+    <div class="card2">
+      <dl class="facts">
+        <dt>Nascita</dt><dd>Carta di San Francisco, firmata il 26 giugno 1945, in vigore dal 24 ottobre 1945 (Giornata delle Nazioni Unite)</dd>
+        <dt>Membri</dt><dd>193 Stati; l'Italia è membro dal 1955</dd>
+        <dt>Sede</dt><dd>New York; uffici principali a Ginevra, Vienna e Nairobi</dd>
+        <dt>Scopi</dt><dd>Mantenere la pace e la sicurezza internazionale, sviluppare relazioni amichevoli tra le nazioni, cooperare per risolvere i problemi economici, sociali e umanitari e promuovere i diritti umani (art. 1 della Carta)</dd>
+      </dl>
+    </div>
+    <p class="muted">L'ONU ha 6 organi principali. Qui trovi i 4 del programma; gli altri due sono il Consiglio economico e sociale (ECOSOC) e il Consiglio di amministrazione fiduciaria, inattivo dal 1994.</p>
+    <div id="organs"></div>
+
+    <h2 class="sec">🧩 Agenzie e alleanze</h2>
+    <div id="agencies"></div>
+
+    <h2 class="sec">🕊️ Pace, diritti umani, sostenibilità</h2>
+    <div class="grid">
+      <div class="card2"><b>🕊️ Tutela della pace</b><p style="margin:6px 0 0;font-size:14.5px;line-height:1.45">Diplomazia preventiva, mediazione, sanzioni e <b>missioni di peacekeeping</b> con i «Caschi blu», che sorvegliano i cessate il fuoco e proteggono i civili. L'Italia è uno dei Paesi occidentali che contribuiscono con più militari, per esempio in Libano con l'UNIFIL.</p></div>
+      <div class="card2"><b>✊ Diritti umani</b><p style="margin:6px 0 0;font-size:14.5px;line-height:1.45">La <b>Dichiarazione universale dei diritti umani</b> è stata adottata il 10 dicembre 1948. Il Consiglio per i diritti umani di Ginevra esamina periodicamente la situazione di ogni Stato con la «Revisione periodica universale».</p></div>
+      <div class="card2"><b>🌱 Sostenibilità e sviluppo</b><p style="margin:6px 0 0;font-size:14.5px;line-height:1.45">Nel 2015 tutti gli Stati hanno firmato l'<b>Agenda 2030</b>, con 17 Obiettivi di sviluppo sostenibile, e l'<b>Accordo di Parigi</b> sul clima, per contenere il riscaldamento globale ben sotto i 2 °C.</p></div>
+    </div>
+    <h2 class="sec">🎯 I 17 Obiettivi dell'Agenda 2030</h2>
+    <div class="sdg" id="sdg"></div>
+    <div class="src">Fonti: <a href="https://www.un.org/en/about-us/un-charter">Carta delle Nazioni Unite</a> · <a href="https://www.un.org/en/ga/">un.org/ga</a> · <a href="https://main.un.org/securitycouncil/">Consiglio di Sicurezza</a> · <a href="https://www.icj-cij.org">icj-cij.org</a> · <a href="https://www.who.int">who.int</a> · <a href="https://www.unesco.org">unesco.org</a> · <a href="https://www.nato.int">nato.int</a> · <a href="https://unric.org/it/agenda-2030/">unric.org/it</a></div>
+  </div>
+</section>
+
+<!-- ================= MAPPA ================= -->
+<section class="view" id="v-mappa">
+  <svg id="map"></svg>
+  <header>
+    <h1>⚔ NATO · Tabellone strategico</h1>
+    <p>32 alleati: tocca un territorio per esplorarlo</p>
+    <button class="hbtn" id="infoBtn" aria-label="Legenda">i</button>
+  </header>
+  <div id="msg">Disegno il tabellone…</div>
+  <nav id="strip"></nav>
+</section>
+<aside id="panel" aria-live="polite"></aside>
+<div id="info"><div class="box" id="infoBox"></div></div>
+
+<!-- ================= ATTUALITÀ ================= -->
+<section class="view" id="v-attualita">
+  <div class="hero news">
+    <div class="kick">Sezione 3 · Approfondimento d'attualità</div>
+    <h1>Chi guiderà l'ONU?</h1>
+    <p>La scelta del 10° Segretario generale, in un anno difficile per il multilateralismo.</p>
+  </div>
+  <div class="wrap">
+    <h2 class="sec">📍 I fatti</h2>
+    <p class="lead">Il secondo mandato di <b>António Guterres</b> (Portogallo) finisce il <b>31 dicembre 2026</b>. Il suo successore guiderà l'ONU per 5 anni dal 1° gennaio 2027, con un mandato rinnovabile una volta.</p>
+    <div class="card2">
+      <b>Come si sceglie (art. 97 della Carta)</b>
+      <div class="steps" style="margin-top:8px">
+        <div class="step"><div class="n">1</div><div><b>Candidature</b>Gli Stati presentano i candidati. Dal 2016 il processo è pubblico: dialoghi con gli Stati e un «town hall» con la società civile.</div></div>
+        <div class="down">▼</div>
+        <div class="step"><div class="n">2</div><div><b>«Straw poll» nel Consiglio di Sicurezza</b>Votazioni informali e segrete: ogni membro indica se incoraggia o scoraggia ogni candidato. Al candidato servono 9 voti su 15 e nessun veto dei 5 membri permanenti.</div></div>
+        <div class="down">▼</div>
+        <div class="step"><div class="n">3</div><div><b>Raccomandazione e nomina</b>Il Consiglio raccomanda un nome; l'Assemblea Generale lo nomina. Finora l'Assemblea non ha mai respinto una raccomandazione.</div></div>
+      </div>
+    </div>
+    <h2 class="sec">👥 I candidati in corsa</h2>
+    <p class="muted">Situazione a metà novembre 2026: otto candidature ancora in campo, nessun favorito netto dopo l'ottava votazione informale del 5 novembre. Michelle Bachelet (Cile) si è ritirata a settembre.</p>
+    <div class="cand" id="cands"></div>
+
+    <h2 class="sec">🌐 Il contesto: un multilateralismo sotto pressione</h2>
+    <div class="grid">
+      <div class="card2"><b>🏥 OMS</b><p style="margin:6px 0 0;font-size:14.5px;line-height:1.45">Il 22 gennaio 2026 gli Stati Uniti, che erano il primo finanziatore, sono usciti formalmente dall'OMS. L'agenzia ha tagliato personale e programmi.</p></div>
+      <div class="card2"><b>📚 UNESCO</b><p style="margin:6px 0 0;font-size:14.5px;line-height:1.45">Gli USA lasceranno l'UNESCO alla fine del 2026, la seconda volta dopo il 2017; garantivano circa l'8% del bilancio. Il nuovo direttore generale, l'egiziano Khaled El-Enany, ha detto di voler riportare Washington nell'organizzazione.</p></div>
+      <div class="card2"><b>🛡️ Consiglio di Sicurezza</b><p style="margin:6px 0 0;font-size:14.5px;line-height:1.45">Dal 2027 entreranno Austria, Portogallo, Kirghizistan (per la prima volta), Trinidad e Tobago e Zimbabwe. La Germania non è stata eletta.</p></div>
+    </div>
+
+    <h2 class="sec">⚖️ I punti in discussione</h2>
+    <div class="pv">
+      <div class="card2"><h4>👩 Una donna alla guida?</h4><p style="margin:0;font-size:14.5px;line-height:1.45">In 80 anni nessuna donna è stata Segretaria generale. Molti Stati e organizzazioni della società civile chiedono che sia la volta buona; altri sostengono che debbano contare solo competenza ed esperienza.</p></div>
+      <div class="card2"><h4>🗺️ Rotazione regionale</h4><p style="margin:0;font-size:14.5px;line-height:1.45">Per prassi informale l'incarico ruota tra le regioni del mondo, e molti ritengono che tocchi all'America Latina. Altri osservano che la rotazione non è scritta nella Carta.</p></div>
+      <div class="card2"><h4>🛑 Il potere di veto</h4><p style="margin:0;font-size:14.5px;line-height:1.45">Ognuno dei 5 membri permanenti può bloccare un candidato. Per alcuni è una garanzia che il Segretario sia accettato dalle grandi potenze; per altri rende la scelta poco democratica e dovrebbe essere riformato.</p></div>
+      <div class="card2"><h4>💰 Un'ONU con meno risorse</h4><p style="margin:0;font-size:14.5px;line-height:1.45">Con l'uscita degli USA da alcune agenzie e i ritardi nei pagamenti, il prossimo Segretario dovrà gestire tagli e la riforma «UN80». Si discute se l'ONU debba fare meno cose ma meglio, o se servano nuovi finanziatori.</p></div>
+    </div>
+    <div class="q"><b>Per discutere in classe →</b> Il Segretario generale dovrebbe essere un «segretario», cioè un amministratore, o un «generale», cioè una voce morale indipendente dalle grandi potenze? E come dovrebbe cambiare il Consiglio di Sicurezza per rappresentare il mondo di oggi e non quello del 1945?</div>
+    <div class="src">Fonti: SDG Knowledge Hub (IISD), «Update on selection of new UN Secretary-General», novembre 2026 · Al Jazeera, «How will the next UN chief be picked?», 15/11/2026 · Diplo, ottava votazione informale del 5/11/2026 · UN Media e WAM, elezioni del Consiglio di Sicurezza del 3/6/2026 · Reuters, AP e Anadolu sull'uscita USA dall'OMS (22/1/2026) e dall'UNESCO</div>
+  </div>
+</section>
+
+<!-- ================= RIFLESSIONE ================= -->
+<section class="view" id="v-riflessione">
+  <div class="hero me">
+    <div class="kick">Sezione 4 · Riflessione personale</div>
+    <h1>Cittadino d'Europa, cittadino del mondo</h1>
+    <p>Che cosa significa per me essere cittadino europeo e globale.</p>
+  </div>
+  <div class="wrap">
+    <article class="essay">
+      <p>Prima di questo lavoro l'Europa, per me, era soprattutto qualcosa di lontano: Bruxelles, qualche notizia al telegiornale, sigle difficili da ricordare. Studiando le istituzioni mi sono accorto che in realtà è già dentro la mia vita di tutti i giorni: nell'euro con cui pago, nel telefono che uso all'estero senza costi in più, nelle regole che proteggono i miei dati online, nella possibilità di attraversare un confine senza mostrare il passaporto.</p>
+      <p>Il diritto che sento più mio è la libertà di circolare, studiare e lavorare in tutta l'Unione. Sono all'ultimo anno e tra pochi mesi dovrò scegliere cosa fare dopo la maturità. Sapere che posso partire con Erasmus+, fare volontariato con il Corpo europeo di solidarietà o cercare lavoro in un altro Paese mi fa sentire che il mio futuro non è chiuso dentro un confine. Ho capito anche che essere cittadino europeo significa avere una voce: il Parlamento europeo è l'unica istituzione dell'Unione eletta direttamente dai cittadini, e alle elezioni del 2029 potrò votare anch'io.</p>
+      <p>La parte sulle organizzazioni internazionali mi ha fatto riflettere su quanto la cooperazione tra Stati sia preziosa ma anche fragile. Mi ha colpito scoprire che in ottant'anni nessuna donna ha mai guidato l'ONU, che un solo veto nel Consiglio di Sicurezza può bloccare decisioni importanti e che quest'anno gli Stati Uniti sono usciti dall'Organizzazione mondiale della sanità. Allo stesso tempo, il cambiamento climatico, le pandemie e le guerre non si fermano alle frontiere: nessun Paese può affrontarli da solo. Per questo penso che organizzazioni imperfette siano comunque meglio di nessuna organizzazione, e che vadano migliorate, non abbandonate.</p>
+      <p>Costruendo la mappa della NATO ho notato che anche Paesi ricchi e stabili hanno problemi simili ai nostri: case troppo care, giovani che emigrano, popolazione che invecchia, governi che cambiano spesso. Mi ha fatto capire che dietro le parole «alleanza» o «sicurezza» ci sono persone con preoccupazioni molto concrete, e che spesso le soluzioni che funzionano in un Paese possono essere d'esempio per un altro.</p>
+      <p>Essere cittadino del mondo, per me, significa ricordare che i diritti che diamo per scontati, come votare, esprimere le proprie idee e andare a scuola, per milioni di persone non lo sono. L'articolo 11 della nostra Costituzione dice che l'Italia ripudia la guerra e promuove le organizzazioni internazionali che lavorano per la pace e la giustizia: è una scelta fatta da chi aveva appena vissuto una guerra, e credo che tocchi alla mia generazione tenerla viva.</p>
+      <p>Nel mio piccolo posso fare alcune cose concrete: informarmi su fonti affidabili invece di fermarmi ai titoli dei social, andare a votare quando ne avrò la possibilità, sprecare meno energia e meno risorse, e cogliere le opportunità che l'Europa offre ai giovani. Alla fine di questo lavoro ho capito che l'Europa e il mondo non sono «da un'altra parte»: cominciano anche da me.</p>
+      <p class="essay-sign">Giuseppe Castrovillari<br><span>Classe 5A</span></p>
+    </article>
+  </div>
+</section>
+
+<!-- ================= COMPETENZE ================= -->
+<section class="view" id="v-competenze">
+  <div class="hero comp">
+    <div class="kick">Io cittadino europeo e del mondo</div>
+    <h1>Competenze attivate</h1>
+    <p>Come questo prodotto collega i nuclei di Educazione civica alle competenze chiave europee.</p>
+  </div>
+  <div class="wrap">
+    <h2 class="sec">📚 Nuclei concettuali di Educazione civica</h2>
+    <div class="nuc">
+      <div class="card2"><h4>⚖️ Costituzione</h4><span class="pill">Competenze 1–4</span><p style="margin:6px 0 0;font-size:14.5px;line-height:1.45">Istituzioni europee e ONU, valori, diritti di cittadinanza, Dichiarazione universale dei diritti umani, rapporto tra Costituzione italiana (art. 11) e organizzazioni internazionali.</p><p class="muted" style="margin:6px 0 0">→ Sezioni Unione europea, Organizzazioni e Mappa NATO</p></div>
+      <div class="card2"><h4>🌱 Sviluppo economico e sostenibilità</h4><span class="pill">Competenze 5–9</span><p style="margin:6px 0 0;font-size:14.5px;line-height:1.45">Agenda 2030 e 17 Obiettivi, euro e BCE, opportunità di studio e lavoro per i giovani, problemi economici e sociali dei Paesi alleati.</p><p class="muted" style="margin:6px 0 0">→ Agenda 2030, Opportunità per i giovani, Mappa NATO</p></div>
+      <div class="card2"><h4>💻 Cittadinanza digitale</h4><span class="pill">Competenze 10–12</span><p style="margin:6px 0 0;font-size:14.5px;line-height:1.45">Realizzare un prodotto digitale interattivo, cercare e verificare le fonti (siti istituzionali, agenzie di stampa), distinguere fatti e opinioni, citare le fonti, privacy (il GDPR).</p><p class="muted" style="margin:6px 0 0">→ L'intero prodotto, fonti in fondo a ogni sezione</p></div>
+    </div>
+    <p class="muted" style="margin-top:8px">💡 Italia e mondo: l'<b>art. 11 della Costituzione</b> consente «limitazioni di sovranità necessarie ad un ordinamento che assicuri la pace e la giustizia fra le Nazioni» e promuove le organizzazioni internazionali rivolte a questo scopo. È la base costituzionale della partecipazione italiana a ONU e UE.</p>
+
+    <h2 class="sec">🇪🇺 Le 8 competenze chiave europee</h2>
+    <table class="kc" id="kc"></table>
+  </div>
+</section>
+
+<nav id="tabs">
+  <button data-go="home"><span>🏠</span>Home</button>
+  <button data-go="ue"><span>🇪🇺</span>UE</button>
+  <button data-go="onu"><span>🌍</span>Organizz.</button>
+  <button data-go="mappa"><span>🗺️</span>NATO</button>
+  <button data-go="attualita"><span>📰</span>Attualità</button>
+  <button data-go="riflessione"><span>✍️</span>Riflessione</button>
+  <button data-go="competenze"><span>🎯</span>Competenze</button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== DATI MAPPA NATO ===================== */
+const AGG = "19 novembre 2026";
+const GROUPS = {
+  na:{n:"Nord America",c:"#5b7f3a"},
+  at:{n:"Europa Atlantica",c:"#2f5d8a"},
+  no:{n:"Nord Europa",c:"#3f8384"},
+  ce:{n:"Europa Centrale",c:"#c4932a"},
+  ea:{n:"Fronte Orientale",c:"#b5432f"},
+  me:{n:"Mediterraneo e Balcani",c:"#6d4a7f"}
+};
+// [iso, nome, capitale, anno, gruppo, [titolo capo di Stato, nome], [titolo capo di governo, nome]|null, nota, problemi[[titolo,testo]], soluzioni[[titolo,testo]]]
+const C = [
+["AL","Albania","Tirana",2009,"me",["Presidente","Bajram Begaj"],["Primo ministro","Edi Rama"],"Ospiterà il vertice NATO del 2027.",
+ [["Emigrazione","Decine di migliaia di giovani qualificati lasciano il Paese ogni anno."],["Corruzione e criminalità","Traffici illeciti e corruzione frenano investimenti e fiducia."],["Percorso UE","Servono riforme dello stato di diritto per chiudere i negoziati di adesione."]],
+ [["Rientro dei talenti","Incentivi fiscali e formazione tecnica legata alle imprese locali."],["Giustizia indipendente","Rafforzare le procure anticorruzione e rendere tracciabili gli appalti."],["Agenda europea","Calendario vincolante per chiudere i capitoli negoziali con l'UE."]]],
+["BE","Belgio","Bruxelles",1949,"at",["Re","Filippo"],["Primo ministro","Bart De Wever"],"",
+ [["Conti pubblici","Deficit e debito tra i più alti dell'eurozona."],["Federalismo complesso","Competenze frammentate tra Stato, regioni e comunità rallentano le decisioni."],["Narcotraffico","Il porto di Anversa è una delle principali porte d'ingresso della cocaina in Europa."]],
+ [["Risanamento graduale","Riforma delle pensioni e revisione della spesa spalmate su più anni."],["Semplificare i livelli","Chiarire chi fa cosa tra governo federale e regioni."],["Porti sicuri","Più scanner e controlli e una cooperazione doganale europea più stretta."]]],
+["BG","Bulgaria","Sofia",2004,"ea",["Presidente","Iliana Iotova"],["Primo ministro","Rumen Radev"],"Radev è premier dall'8 maggio 2026, dopo l'ottava elezione in cinque anni. Iotova, presidente da gennaio, ha vinto le presidenziali del 1° novembre 2026.",
+ [["Instabilità politica","Otto elezioni parlamentari in cinque anni."],["Corruzione e giustizia","Le proteste anticorruzione hanno fatto cadere il governo precedente."],["Caro prezzi","L'aumento dei prezzi è la prima preoccupazione dei cittadini."]],
+ [["Riforma della procura","Rendere la procura generale responsabile e controllabile."],["Prezzi trasparenti","Più concorrenza e controlli dell'antitrust sui beni essenziali."],["Fondi UE","Approvare le riforme richieste per sbloccare i fondi europei."]]],
+["CA","Canada","Ottawa",1949,"na",["Sovrano","Re Carlo III"],["Primo ministro","Mark Carney"],"",
+ [["Dipendenza dagli USA","Circa tre quarti dell'export va negli Stati Uniti, che hanno alzato i dazi."],["Crisi abitativa","I prezzi delle case sono molto più alti dei redditi nelle grandi città."],["Artico e difesa","Bisogna sorvegliare un territorio artico immenso con risorse limitate."]],
+ [["Diversificare i mercati","Accordi con UE e Asia e meno barriere al commercio tra province."],["Costruire di più","Iter edilizi più rapidi e alloggi pubblici prefabbricati."],["Sovranità artica","Investimenti in NORAD, radar a lungo raggio e sottomarini."]]],
+["HR","Croazia","Zagabria",2009,"me",["Presidente","Zoran Milanović"],["Primo ministro","Andrej Plenković"],"",
+ [["Calo demografico","Popolazione in diminuzione ed emigrazione verso l'Europa occidentale."],["Inflazione","Inflazione tra le più alte dell'eurozona."],["Dipendenza dal turismo","Il turismo pesa molto sul PIL ed è stagionale."]],
+ [["Famiglie e rientro","Servizi per l'infanzia e incentivi per chi rientra."],["Freno ai prezzi","Più concorrenza nella distribuzione e politica dei redditi."],["Economia tutto l'anno","Puntare su IT, logistica portuale ed energia rinnovabile."]]],
+["CZ","Cechia","Praga",1999,"ce",["Presidente","Petr Pavel"],["Primo ministro","Andrej Babiš"],"",
+ [["Costo dell'energia","Le bollette alte pesano su un'industria manifatturiera pesante."],["Case care","Il rapporto tra prezzo delle case e reddito è tra i peggiori d'Europa."],["Spesa per la difesa","Bisogna raggiungere i nuovi obiettivi NATO di spesa."]],
+ [["Mix energetico","Nuovo nucleare, rinnovabili e interconnessioni con i vicini."],["Permessi edilizi","Digitalizzare e accelerare l'edilizia residenziale."],["Industria della difesa","Legare la spesa militare alla produzione nazionale."]]],
+["DK","Danimarca","Copenaghen",1949,"no",["Re","Federico X"],["Prima ministra","Mette Frederiksen"],"Frederiksen guida dal giugno 2026 un governo di minoranza di centro-sinistra (terzo mandato).",
+ [["Groenlandia","Gli Stati Uniti hanno chiesto la Groenlandia, aprendo una crisi diplomatica."],["Sicurezza nel Baltico","Cavi e gasdotti sottomarini sono esposti a sabotaggi."],["Governo di minoranza","La coalizione ha 82 seggi su 179 e deve cercare voti in Parlamento."]],
+ [["Dialogo a tre","Accordi tra Danimarca, Groenlandia e USA nel quadro NATO, rispettando l'autodeterminazione."],["Sorveglianza dei fondali","Droni subacquei e pattugliamenti comuni nel Baltico."],["Patti trasversali","Accordi ampi su difesa e bilancio."]]],
+["EE","Estonia","Tallinn",2004,"ea",["Presidente","Ülle Madise"],["Primo ministro","Kristen Michal"],"Madise è presidente dal 12 ottobre 2026.",
+ [["Confine con la Russia","Minacce ibride: interferenze GPS, sconfinamenti, cyberattacchi."],["Crescita lenta","L'economia ha faticato a riprendersi dopo il 2022."],["Coesione sociale","Integrazione della minoranza russofona."]],
+ [["Linea di difesa baltica","Fortificazioni e difesa territoriale insieme a Lettonia e Lituania."],["Rilancio digitale","Puntare su tecnologia, startup e tecnologie per la difesa."],["Scuola inclusiva","Passaggio all'insegnamento in estone con più tutor e sostegno."]]],
+["FI","Finlandia","Helsinki",2023,"no",["Presidente","Alexander Stubb"],["Primo ministro","Petteri Orpo"],"",
+ [["1.340 km di confine","Il confine con la Russia è il più lungo della NATO."],["Disoccupazione","Tra le più alte dell'UE."],["Debito in crescita","La spesa pubblica cresce più delle entrate."]],
+ [["Difesa integrata","Integrare la leva di massa nei piani NATO."],["Mercato del lavoro","Formazione continua e più immigrazione qualificata."],["Regole di bilancio","Tetti di spesa pluriennali concordati tra i partiti."]]],
+["FR","Francia","Parigi",1949,"at",["Presidente","Emmanuel Macron"],["Primo ministro","Sébastien Lecornu"],"Presidenziali previste nel 2027.",
+ [["Parlamento senza maggioranza","Difficile approvare i bilanci; diversi governi sono caduti dal 2024."],["Deficit e debito","Deficit intorno al 5% del PIL e debito in aumento."],["Tensioni sociali","Divisioni profonde su pensioni e potere d'acquisto."]],
+ [["Patti di bilancio","Accordi pluriennali tra più partiti sulla traiettoria del deficit."],["Risanamento equilibrato","Ridurre la spesa e rivedere la fiscalità in modo condiviso."],["Dialogo sociale","Coinvolgere sindacati e imprese nelle riforme."]]],
+["DE","Germania","Berlino",1955,"ce",["Presidente","Frank-Walter Steinmeier"],["Cancelliere","Friedrich Merz"],"",
+ [["Industria in difficoltà","Energia cara e concorrenza cinese colpiscono auto e chimica."],["Infrastrutture","Ferrovie, ponti e rete digitale hanno bisogno di investimenti."],["Bundeswehr","Mancano soldati ed equipaggiamenti."]],
+ [["Energia competitiva","Più reti elettriche, accumuli e contratti di lungo periodo."],["Fondo infrastrutture","Usare il fondo straordinario snellendo la burocrazia."],["Reclutamento","Nuovo servizio militare e acquisti europei comuni."]]],
+["GR","Grecia","Atene",1952,"me",["Presidente","Konstantinos Tasoulas"],["Primo ministro","Kyriakos Mitsotakis"],"",
+ [["Debito pubblico","Il più alto dell'UE in rapporto al PIL, anche se in calo."],["Demografia","Le nascite sono ai minimi storici e la popolazione invecchia."],["Incendi e clima","Estati sempre più estreme."]],
+ [["Avanzi sostenibili","Continuare a ridurre il debito proteggendo gli investimenti."],["Natalità","Bonus casa per giovani coppie e asili nido."],["Protezione civile","Prevenzione degli incendi e flotta aerea antincendio europea."]]],
+["HU","Ungheria","Budapest",1999,"ce",["Presidente","András Baka"],["Primo ministro","Péter Magyar"],"Magyar è premier dal 9 maggio 2026 dopo la vittoria del partito Tisza; Baka è presidente da agosto.",
+ [["Fondi UE congelati","Circa 17 miliardi bloccati per problemi di stato di diritto."],["Transizione istituzionale","Il governo prepara una nuova costituzione."],["Energia","Dipendenza dal gas russo; la centrale di Paks soffre per la siccità del Danubio."]],
+ [["Riforme per i fondi","Rispettare le condizioni UE su giustizia e appalti."],["Costituzione condivisa","Consultazione ampia e garanzie per l'opposizione."],["Diversificare l'energia","Interconnessioni regionali, GNL e rinnovabili."]]],
+["IS","Islanda","Reykjavík",1949,"at",["Presidente","Halla Tómasdóttir"],["Prima ministra","Kristrún Frostadóttir"],"L'Islanda non ha forze armate proprie.",
+ [["Nessun esercito","La difesa dipende dagli alleati, in un'area strategica dell'Atlantico."],["Vulcani","Le eruzioni sulla penisola di Reykjanes minacciano Grindavík."],["Inflazione e tassi","Credito costoso per famiglie e imprese."]],
+ [["Contributo civile","Ospitare infrastrutture NATO e una guardia costiera più forte."],["Protezione dai vulcani","Barriere contro la lava e piani di trasferimento."],["Stabilità monetaria","Coordinare politica di bilancio e salari."]]],
+["IT","Italia","Roma",1949,"me",["Presidente","Sergio Mattarella"],["Presidente del Consiglio","Giorgia Meloni"],"",
+ [["Debito pubblico","Circa il 135% del PIL; la spesa per interessi è elevata."],["Denatalità","Le nascite sono ai minimi dall'Unità d'Italia."],["Produttività e Sud","Crescita lenta e un ampio divario tra Nord e Sud."]],
+ [["Crescita e conti","Completare gli investimenti del PNRR e ridurre l'evasione."],["Lavoro femminile e nidi","Più asili nido e congedi parentali condivisi."],["Investire al Sud","Infrastrutture, istruzione tecnica e semplificazione."]]],
+["LV","Lettonia","Riga",2004,"ea",["Presidente","Edgars Rinkēvičs"],["Primo ministro","Andris Kulbergs"],"Il partito di Kulbergs ha vinto le elezioni del 3 ottobre 2026; il nuovo governo è in formazione.",
+ [["Droni e difesa aerea","Droni ucraini deviati dalle interferenze russe sono caduti sul territorio lettone."],["Spopolamento","La popolazione cala da trent'anni."],["Crescita bassa","Redditi ancora sotto la media UE."]],
+ [["Scudo aereo","Difesa antidrone integrata con i Paesi baltici e la NATO."],["Ritorno dei lettoni","Programmi per chi rientra dall'estero."],["Investimenti","Rail Baltica ed energia rinnovabile."]]],
+["LT","Lituania","Vilnius",2004,"ea",["Presidente","Gitanas Nausėda"],["Primo ministro","Mindaugas Sinkevičius"],"Sinkevičius è premier dal luglio 2026: terzo capo di governo in due anni.",
+ [["Ricambio di governi","Tre premier socialdemocratici dal 2024."],["Corridoio di Suwałki","Lo stretto passaggio tra Bielorussia e Kaliningrad."],["Demografia","Invecchiamento ed emigrazione."]],
+ [["Patto di coalizione","Programma con coperture finanziarie chiare."],["Brigata tedesca","Integrare le truppe alleate stabilmente nel Paese."],["Attrarre lavoratori","Visti rapidi per professioni qualificate."]]],
+["LU","Lussemburgo","Lussemburgo",1949,"at",["Granduca","Guglielmo"],["Primo ministro","Luc Frieden"],"",
+ [["Case carissime","I prezzi delle case sono tra i più alti d'Europa."],["Dipendenza dalla finanza","L'economia è sbilanciata sul settore finanziario."],["Spesa per la difesa","Difficile raggiungere le quote NATO con un PIL pro capite così alto."]],
+ [["Edilizia pubblica","Costruire su terreni pubblici e tassare le case sfitte."],["Diversificare","Investire in spazio, dati e tecnologie per la salute."],["Contributi mirati","Satelliti e logistica per le missioni alleate."]]],
+["ME","Montenegro","Podgorica",2017,"me",["Presidente","Jakov Milatović"],["Primo ministro","Milojko Spajić"],"",
+ [["Adesione all'UE","Obiettivo: chiudere i capitoli negoziali entro il 2026."],["Criminalità organizzata","Clan del contrabbando e del traffico di cocaina."],["Polarizzazione","Divisioni identitarie tra forze filo-europee e filo-serbe."]],
+ [["Riforme rapide","Magistratura indipendente e nomine trasparenti."],["Cooperazione di polizia","Squadre investigative comuni con Europol."],["Dialogo inclusivo","Maggioranze ampie sulle scelte di fondo del Paese."]]],
+["NL","Paesi Bassi","Amsterdam",1949,"at",["Re","Guglielmo Alessandro"],["Primo ministro","Rob Jetten"],"Jetten guida dal febbraio 2026 un governo di minoranza.",
+ [["Carenza di case","Mancano centinaia di migliaia di abitazioni."],["Crisi dell'azoto","Le regole ambientali bloccano permessi edilizi e agricoltura."],["Governo fragile","Bassa fiducia e nessuna maggioranza in Parlamento."]],
+ [["Piano casa","Nuovi quartieri e procedure di autorizzazione più rapide."],["Transizione agricola","Riconversione volontaria con compensazioni per gli agricoltori."],["Accordi caso per caso","Patti con l'opposizione su bilancio e difesa."]]],
+["MK","Macedonia del Nord","Skopje",2020,"me",["Presidente","Gordana Siljanovska-Davkova"],["Primo ministro","Hristijan Mickoski"],"",
+ [["Adesione UE bloccata","La disputa con la Bulgaria sulla modifica della costituzione."],["Emigrazione","Giovani e medici partono verso l'UE."],["Corruzione","Bassa fiducia nelle istituzioni."]],
+ [["Mediazione europea","Garanzie bilaterali per sbloccare il negoziato."],["Lavoro qualificato","Salari competitivi in sanità e IT."],["Trasparenza","Appalti online e un'agenzia anticorruzione rafforzata."]]],
+["NO","Norvegia","Oslo",1949,"no",["Re","Harald V"],["Primo ministro","Jonas Gahr Støre"],"",
+ [["Dipendenza da gas e petrolio","Gli idrocarburi sono la base delle entrate dello Stato."],["Artico","Confine con la Russia e la Flotta del Nord a Murmansk."],["Costo della vita","Corona debole e prezzi alti."]],
+ [["Transizione","Eolico in mare e cattura della CO₂ finanziati dal fondo sovrano."],["Presenza nel Nord","Più pattugliamenti e sorveglianza con gli alleati."],["Produttività","Investire in tecnologia per rafforzare la valuta."]]],
+["PL","Polonia","Varsavia",1999,"ce",["Presidente","Karol Nawrocki"],["Primo ministro","Donald Tusk"],"",
+ [["Coabitazione difficile","Il presidente e il governo, di schieramenti opposti, si bloccano le leggi a vicenda."],["Minacce ibride","Pressione migratoria dal confine bielorusso e sabotaggi."],["Spesa militare record","Intorno al 4,7% del PIL, con un deficit in crescita."]],
+ [["Leggi concordate","Negoziare prima i testi per evitare i veti."],["Scudo orientale","Fortificazioni e controllo elettronico del confine."],["Fondi europei per la difesa","Prestiti UE agevolati e produzione locale di armamenti."]]],
+["PT","Portogallo","Lisbona",1949,"at",["Presidente","António José Seguro"],["Primo ministro","Luís Montenegro"],"Seguro è presidente dal 9 marzo 2026.",
+ [["Crisi abitativa","Affitti fuori portata a Lisbona e Porto."],["Sanità sotto pressione","Pronto soccorso chiusi a turno e carenza di medici di famiglia."],["Salari bassi","I giovani laureati emigrano."]],
+ [["Più alloggi","Riconvertire immobili pubblici e regolare gli affitti brevi."],["Medici di base","Incentivi per le zone scoperte."],["Salari e produttività","Sgravi legati agli aumenti salariali."]]],
+["RO","Romania","Bucarest",2004,"ea",["Presidente","Nicușor Dan"],["Primo ministro","Luca Niculescu"],"Niculescu è premier dal 20 ottobre 2026, dopo quasi sei mesi di stallo.",
+ [["Deficit","Tra i più alti dell'UE; c'è il rischio di perdere il rating di investimento."],["Instabilità politica","Quattro candidati premier prima di trovare una maggioranza."],["Fianco orientale","Detriti di droni russi caduti vicino al confine con l'Ucraina."]],
+ [["Risanamento credibile","Più riscossione fiscale e meno spese correnti."],["Patto pro-europeo","Accordo stabile tra i partiti per la legislatura."],["Difesa aerea","Sistemi antidrone e presenza alleata sul Mar Nero."]]],
+["SK","Slovacchia","Bratislava",2004,"ce",["Presidente","Peter Pellegrini"],["Primo ministro","Robert Fico"],"",
+ [["Conti pubblici","Pacchetti di risanamento con aumenti di tasse."],["Rapporti con l'UE","Dibattito su stato di diritto e libertà dei media."],["Dipendenza dall'auto","Il Paese produce più auto pro capite al mondo."]],
+ [["Bilancio pluriennale","Risanamento graduale che protegga gli investimenti."],["Dialogo con Bruxelles","Rispettare le raccomandazioni sullo stato di diritto."],["Diversificare","Batterie, ricerca e servizi digitali."]]],
+["SI","Slovenia","Lubiana",2004,"ce",["Presidente","Nataša Pirc Musar"],["Primo ministro","Janez Janša"],"Janša è premier dal maggio 2026 (quarto mandato).",
+ [["Polarizzazione","Le elezioni di marzo sono finite quasi in parità."],["Sanità","Lunghe liste d'attesa."],["Pensioni","L'invecchiamento della popolazione pesa sul sistema."]],
+ [["Riforme condivise","Coinvolgere l'opposizione su sanità e pensioni."],["Accesso alle cure","Digitalizzare le prenotazioni e incentivare i medici di base."],["Sostenibilità","Età pensionabile flessibile e previdenza integrativa."]]],
+["ES","Spagna","Madrid",1982,"at",["Re","Filippo VI"],["Presidente del governo","Pedro Sánchez"],"Elezioni politiche anticipate il 29 novembre 2026.",
+ [["Emergenza casa","Affitti e prezzi in forte crescita; il Congresso ha bocciato i decreti sulla casa."],["Parlamento frammentato","Si usa ancora il bilancio del 2023, prorogato."],["Spesa per la difesa","Tra le più basse della NATO in rapporto al PIL."]],
+ [["Offerta di alloggi","Più edilizia pubblica in affitto e permessi più rapidi."],["Accordi di bilancio","Patti tra i blocchi su conti e riforme."],["Difesa e innovazione","Aumenti graduali legati all'industria e alla tecnologia."]]],
+["SE","Svezia","Stoccolma",2024,"no",["Re","Carlo XVI Gustavo"],["Primo ministro (ad interim)","Ulf Kristersson"],"Dopo il voto del 13 settembre il Parlamento ha respinto due candidati premier; il nuovo governo non è ancora formato.",
+ [["Stallo di governo","Due voti di fiducia falliti; dopo quattro si torna alle urne."],["Violenza delle gang","Sparatorie ed esplosioni legate alla criminalità organizzata."],["Integrazione","Segregazione abitativa e disoccupazione tra i nuovi arrivati."]],
+ [["Compromesso al centro","Governo di minoranza tollerato con accordi scritti."],["Prevenzione e repressione","Lavoro sociale nei quartieri e indagini sui patrimoni dei clan."],["Lavoro e lingua","Corsi di lingua e tirocini fin dall'arrivo."]]],
+["TR","Turchia","Ankara",1952,"me",["Presidente (capo di Stato e di governo)","Recep Tayyip Erdoğan"],null,"Ha ospitato il vertice NATO del luglio 2026.",
+ [["Inflazione","Ancora alta, anche se in calo rispetto ai picchi."],["Stato di diritto","UE e osservatori criticano i processi a esponenti dell'opposizione e la libertà di stampa."],["Rischio sismico","Ricostruzione dopo il terremoto del 2023 ed edifici vulnerabili."]],
+ [["Disinflazione","Politica monetaria indipendente e prevedibile."],["Garanzie giudiziarie","Riforme raccomandate dal Consiglio d'Europa."],["Edilizia antisismica","Controlli indipendenti sui cantieri."]]],
+["GB","Regno Unito","Londra",1949,"at",["Re","Carlo III"],["Primo ministro","Andy Burnham"],"Burnham ha sostituito Starmer nel luglio 2026: settimo premier in dieci anni.",
+ [["Crescita lenta","Conti pubblici sotto pressione e bassa produttività."],["Servizio sanitario","Lunghe liste d'attesa nell'NHS."],["Instabilità politica","Ricambio continuo di premier e calo della fiducia."]],
+ [["Investimenti","Riforma urbanistica e investimenti nelle infrastrutture."],["Sanità","Più cure sul territorio e attrezzature diagnostiche."],["Rapporti con l'UE","Accordi su difesa e commercio senza tornare nel mercato unico."]]],
+["US","Stati Uniti","Washington",1949,"na",["Presidente (capo di Stato e di governo)","Donald Trump"],["Vicepresidente","JD Vance"],"Elezioni di metà mandato del 3 novembre 2026 appena svolte.",
+ [["Debito federale","Oltre il 100% del PIL; gli interessi crescono velocemente."],["Polarizzazione","Divisioni profonde e scarsa fiducia nelle istituzioni."],["Costo della vita","Sanità e case sono tra le più care dei Paesi OCSE."]],
+ [["Bilancio bipartisan","Una commissione bipartisan su entrate e spesa obbligatoria."],["Ricucire il dialogo","Riforme dei collegi e del sistema delle primarie."],["Accessibilità","Riforme delle regole urbanistiche e trasparenza dei prezzi in sanità."]]]
+];
+const BY = Object.fromEntries(C.map((d,i)=>[d[0],{iso:d[0],name:d[1],cap:d[2],year:d[3],g:d[4],hos:d[5],hog:d[6],note:d[7],prob:d[8],sol:d[9],i}]));
+const ORDER = C.map(d=>d[0]).sort((a,b)=>BY[a].name.localeCompare(BY[b].name,'it'));
+const EXTRA = {GL:"DK"}; // Groenlandia → Danimarca
+
+
+/* ===================== DATI GUIDA ===================== */
+const TIMELINE=[
+ ["1950","9 maggio: Dichiarazione Schuman. Il 9 maggio è oggi la «Festa dell'Europa»."],
+ ["1951","Trattato di Parigi: nasce la CECA (Comunità europea del carbone e dell'acciaio) tra Belgio, Francia, Germania Ovest, Italia, Lussemburgo e Paesi Bassi."],
+ ["1957","Trattati di Roma: nascono la CEE (Comunità economica europea, il mercato comune) e l'Euratom."],
+ ["1979","Prima elezione diretta del Parlamento europeo da parte dei cittadini."],
+ ["1985","Accordi di Schengen: inizia l'abolizione dei controlli alle frontiere interne."],
+ ["1986","Atto unico europeo: obiettivo del mercato unico entro il 1992."],
+ ["1992","Trattato di Maastricht: nasce l'Unione europea e la cittadinanza europea; si avvia la moneta unica."],
+ ["2002","Le banconote e monete in euro entrano nelle tasche dei cittadini (moneta virtuale dal 1999)."],
+ ["2004","Grande allargamento a Est: entrano 10 nuovi Paesi."],
+ ["2009","Entra in vigore il Trattato di Lisbona: più poteri al Parlamento, nasce il presidente stabile del Consiglio europeo, la Carta dei diritti diventa vincolante."],
+ ["2012","L'UE riceve il Premio Nobel per la pace."],
+ ["2013","La Croazia diventa il 28° Stato membro."],
+ ["2020","Brexit: il Regno Unito esce, gli Stati membri tornano 27."],
+ ["2026","La Bulgaria adotta l'euro: l'eurozona arriva a 21 Paesi."]
+];
+const VALUES=[["🧍","Dignità umana"],["🕊️","Libertà"],["🗳️","Democrazia"],["🟰","Uguaglianza"],["⚖️","Stato di diritto"],["✊","Diritti umani e delle minoranze"]];
+const RIGHTS=[
+ "<b>Circolare e soggiornare</b> liberamente in tutti gli Stati membri, per studiare, lavorare o vivere.",
+ "<b>Votare e candidarsi</b> alle elezioni europee e comunali nel Paese UE in cui si risiede.",
+ "<b>Protezione consolare</b> da parte dell'ambasciata di qualsiasi Paese UE in uno Stato extra-UE dove l'Italia non è rappresentata.",
+ "<b>Presentare una petizione</b> al Parlamento europeo e rivolgersi al <b>Mediatore europeo</b> contro la cattiva amministrazione.",
+ "<b>Scrivere alle istituzioni</b> in una delle 24 lingue ufficiali e ricevere risposta nella stessa lingua.",
+ "<b>Iniziativa dei cittadini europei</b>: con 1 milione di firme raccolte in almeno 7 Paesi si può chiedere alla Commissione di proporre una legge."
+];
+// [icona, colore, nome, sottotitolo, sede, composizione, funzioni[], [ruolo leader, nome], nota]
+const INST=[
+ ["🗳️","#1f3f8f","Parlamento europeo","Voce dei cittadini","Strasburgo (sessioni plenarie), Bruxelles, Lussemburgo",
+  "720 deputati eletti a suffragio universale diretto ogni 5 anni (ultime elezioni: giugno 2024); all'Italia spettano 76 seggi. I deputati siedono per gruppi politici, non per nazionalità.",
+  ["Approva le leggi insieme al Consiglio (potere legislativo)","Approva il bilancio dell'UE insieme al Consiglio","Elegge il presidente della Commissione e approva l'intero collegio; può sfiduciarlo con una mozione di censura","Controlla le altre istituzioni: interrogazioni, commissioni d'inchiesta, petizioni"],
+  ["Presidente","Roberta Metsola (Malta)"],""],
+ ["⭐","#14295e","Consiglio europeo","La bussola politica","Bruxelles",
+  "I capi di Stato o di governo dei 27 Paesi (per l'Italia la presidente del Consiglio), il suo presidente e la presidente della Commissione.",
+  ["Definisce gli orientamenti e le priorità politiche generali","Non approva leggi","Affronta le crisi e le questioni più delicate (es. allargamento, difesa)","Propone il presidente della Commissione e nomina alte cariche, come il presidente della BCE"],
+  ["Presidente","António Costa (Portogallo)"],"Da non confondere con il Consiglio d'Europa di Strasburgo, che non fa parte dell'UE."],
+ ["🤝","#2f5d8a","Consiglio dell'UE","La voce dei governi","Bruxelles e Lussemburgo",
+  "Un ministro per ogni Paese, diverso secondo l'argomento (agricoltura, economia, esteri…): 10 «formazioni».",
+  ["Approva le leggi insieme al Parlamento","Approva il bilancio insieme al Parlamento","Coordina le politiche economiche degli Stati","Definisce la politica estera e di sicurezza comune","Decide di solito a maggioranza qualificata: 55% degli Stati che rappresentino almeno il 65% della popolazione"],
+  ["Presidenza a rotazione","Irlanda (luglio–dicembre 2026), poi Lituania (gennaio–giugno 2027)"],""],
+ ["📋","#3f8384","Commissione europea","Il motore dell'UE","Bruxelles",
+  "27 commissari, uno per Paese, ciascuno con un settore, indipendenti dai governi nazionali. Mandato di 5 anni.",
+  ["Ha il potere di iniziativa: propone le nuove leggi","Esegue le politiche e gestisce il bilancio (potere esecutivo)","È «custode dei trattati»: controlla che gli Stati rispettino il diritto UE e avvia procedure d'infrazione","Rappresenta l'UE nei negoziati commerciali internazionali"],
+  ["Presidente","Ursula von der Leyen (Germania), secondo mandato dal 2024"],""],
+ ["⚖️","#6d4a7f","Corte di giustizia dell'UE (CGUE)","Garante del diritto europeo","Lussemburgo",
+  "Due organi: la Corte di giustizia (1 giudice per Stato più 11 avvocati generali) e il Tribunale. Mandati di 6 anni.",
+  ["Interpreta il diritto dell'UE in modo uniforme in tutti gli Stati","Rinvio pregiudiziale: i giudici nazionali le chiedono come interpretare una norma UE","Decide sui ricorsi per inadempimento contro gli Stati","Annulla gli atti delle istituzioni contrari ai Trattati"],
+  ["Presidente","Koen Lenaerts (Belgio)"],""],
+ ["💶","#c4932a","Banca centrale europea (BCE)","Custode dell'euro","Francoforte",
+  "Comitato esecutivo di 6 membri e Consiglio direttivo con i governatori delle banche centrali dei 21 Paesi dell'eurozona.",
+  ["Mantiene stabili i prezzi: obiettivo di inflazione al 2% nel medio periodo","Fissa i tassi d'interesse per l'eurozona","Autorizza l'emissione delle banconote in euro","Vigila sulle banche più grandi (vigilanza bancaria europea)","È indipendente dai governi"],
+  ["Presidente","Christine Lagarde (Francia), mandato fino a ottobre 2027"],""],
+ ["🔍","#5b7f3a","Corte dei conti europea","Il controllore dei soldi UE","Lussemburgo",
+  "27 membri, uno per Stato.",
+  ["Verifica che il bilancio dell'UE sia riscosso e speso in modo legale e corretto","Pubblica ogni anno una relazione sui conti","Segnala irregolarità e possibili frodi all'OLAF (Ufficio europeo antifrode)"],
+  ["Presidente","Tony Murphy (Irlanda)"],""]
+];
+const STEPS=[
+ ["Commissione","Proposta","La Commissione scrive una proposta di legge, spesso dopo consultazioni pubbliche aperte anche ai cittadini."],
+ ["Parlamento","Prima lettura","Il Parlamento discute in commissione e in plenaria e adotta la sua posizione, con eventuali emendamenti."],
+ ["Consiglio","Prima lettura","Se il Consiglio approva la posizione del Parlamento, l'atto è adottato; altrimenti adotta una propria posizione."],
+ ["Parlamento + Consiglio","Seconda lettura e «triloghi»","Negoziati informali tra Parlamento, Consiglio e Commissione per trovare un accordo."],
+ ["Comitato di conciliazione","Ultima possibilità","Se ancora non c'è accordo, un comitato paritetico cerca un testo comune; se fallisce, la legge non passa."],
+ ["Gazzetta ufficiale UE","Pubblicazione","La legge entra in vigore. Se è una direttiva, gli Stati devono recepirla entro un termine."]
+];
+const YOUTH=[
+ ["Erasmus+","Scuola e oltre","Mobilità per studio, tirocinio, scambi tra scuole e formazione in tutta Europa. Anche gli studenti delle superiori possono partecipare tramite i progetti della propria scuola."],
+ ["DiscoverEU","18 anni","Un pass gratuito per viaggiare in treno per l'Europa, assegnato con un bando due volte l'anno."],
+ ["Corpo europeo di solidarietà","18–30 anni","Volontariato in progetti sociali, ambientali e umanitari, in Italia o all'estero, con vitto, alloggio e assicurazione coperti."],
+ ["Garanzia Giovani","15–29 anni","Offerta di lavoro, apprendistato, tirocinio o formazione per chi non studia e non lavora."],
+ ["Euroscola","16–18 anni","Le classi passano una giornata al Parlamento europeo di Strasburgo e simulano il lavoro dei deputati."],
+ ["Europass ed EURES","Lavoro","Un modello di CV europeo per presentare le proprie competenze e un portale per cercare lavoro negli altri Paesi UE."],
+ ["Portale europeo per i giovani","Tutte le età","youth.europa.eu: bandi, eventi, volontariato, consultazioni e come far sentire la propria voce sulle politiche UE."]
+];
+// organi ONU: [icona, colore, nome, sottotitolo, sede, composizione, funzioni[], [ruolo, nome], nota]
+const ORGANS=[
+ ["🌐","#2f7fc1","Assemblea Generale","Il «parlamento del mondo»","New York",
+  "Tutti i 193 Stati membri, ognuno con un voto. Si riunisce ogni anno a settembre e il presidente cambia ogni anno.",
+  ["Discute ogni questione prevista dalla Carta e approva raccomandazioni, non vincolanti","Approva il bilancio ONU e i contributi degli Stati","Elegge i membri non permanenti del Consiglio di Sicurezza e i giudici della CIG (con il Consiglio)","Ammette nuovi membri e nomina il Segretario generale su raccomandazione del Consiglio","Decide a maggioranza dei due terzi sulle questioni importanti"],
+  ["Presidente dell'81ª sessione (2026–27)","Khalilur Rahman (Bangladesh)"],""],
+ ["🛡️","#1c4f7a","Consiglio di Sicurezza","Il custode della pace","New York",
+  "15 membri. 5 permanenti con diritto di veto: Cina, Francia, Regno Unito, Russia, Stati Uniti. 10 non permanenti eletti per 2 anni; nel 2026: Bahrein, Colombia, Danimarca, Grecia, Lettonia, Liberia, Pakistan, Panama, RD del Congo, Somalia.",
+  ["Ha la responsabilità principale del mantenimento della pace e della sicurezza","È l'unico organo le cui decisioni sono vincolanti per tutti gli Stati","Può imporre sanzioni e autorizzare l'uso della forza (capitolo VII)","Istituisce le missioni di pace","Raccomanda il Segretario generale e l'ammissione di nuovi membri"],
+  ["Presidenza","Cambia ogni mese a rotazione tra i membri"],"Dal 1° gennaio 2027 entrano Austria, Kirghizistan, Portogallo, Trinidad e Tobago e Zimbabwe."],
+ ["🗂️","#3f6f9a","Segretariato","La macchina dell'ONU","New York, con uffici in tutto il mondo",
+  "Funzionari internazionali al servizio di tutti gli Stati, guidati dal Segretario generale, nominato per 5 anni.",
+  ["Svolge il lavoro quotidiano: rapporti, missioni, conferenze, traduzioni","Il Segretario generale è il «capo amministrativo» dell'organizzazione","Può segnalare al Consiglio di Sicurezza ogni minaccia alla pace (art. 99)","Offre «buoni uffici» e mediazione nei conflitti"],
+  ["Segretario generale","António Guterres (Portogallo), mandato fino al 31 dicembre 2026"],"La scelta del successore è in corso: vedi la sezione Attualità."],
+ ["⚖️","#6d4a7f","Corte internazionale di giustizia","Il tribunale degli Stati","L'Aia (Paesi Bassi), Palazzo della Pace",
+  "15 giudici di nazionalità diverse, eletti per 9 anni da Assemblea Generale e Consiglio di Sicurezza.",
+  ["Risolve le controversie giuridiche tra Stati, se gli Stati ne accettano la giurisdizione","Dà pareri consultivi agli organi e alle agenzie ONU","Le sentenze sono vincolanti per le parti"],
+  ["Presidente","Iwasawa Yuji (Giappone)"],"Non processa le persone: i crimini di guerra dei singoli sono giudicati dalla Corte penale internazionale, che è un'altra istituzione."]
+];
+const AGENCIES=[
+ ["🏥","#3f8384","OMS – Organizzazione mondiale della sanità","Salute per tutti","Ginevra · fondata nel 1948 (7 aprile, Giornata mondiale della salute)",
+  "Agenzia specializzata dell'ONU con circa 194 Stati membri; l'organo decisionale è l'Assemblea mondiale della sanità.",
+  ["Coordina la risposta alle emergenze sanitarie e alle pandemie","Fissa standard e linee guida internazionali","Promuove vaccinazioni, ad esempio l'eradicazione della poliomielite","Lotta contro malattie come HIV, tubercolosi e malaria e contro il tabacco"],
+  ["Direttore generale","Tedros Adhanom Ghebreyesus (Etiopia)"],"Gli Stati Uniti sono usciti formalmente dall'OMS il 22 gennaio 2026."],
+ ["📚","#c4932a","UNESCO","Educazione, scienza e cultura","Parigi · fondata nel 1945",
+  "Agenzia specializzata dell'ONU con 194 Stati membri.",
+  ["Promuove un'istruzione di qualità per tutti","Tutela il Patrimonio mondiale (siti culturali e naturali) e il patrimonio immateriale","Sostiene la libertà di stampa e la cooperazione scientifica","Il suo scopo, scritto nell'atto costitutivo, è costruire la pace «nella mente degli uomini»"],
+  ["Direttore generale","Khaled El-Enany (Egitto), dal novembre 2025"],"L'Italia è tra i Paesi con più siti Patrimonio dell'umanità. Gli USA lasceranno l'UNESCO alla fine del 2026."],
+ ["🛡️","#5b7f3a","NATO – Organizzazione del Trattato del Nord Atlantico","Alleanza di difesa collettiva","Bruxelles · Trattato di Washington, 4 aprile 1949",
+  "32 Stati membri di Europa e Nord America; l'Italia è tra i 12 fondatori. Non fa parte dell'ONU, ma agisce nel quadro della sua Carta (art. 51, legittima difesa).",
+  ["Articolo 5: un attacco armato contro un alleato è considerato un attacco contro tutti","Pianifica la difesa comune ed esercitazioni","Gestione delle crisi e cooperazione con Paesi partner","Gli alleati si sono impegnati a portare la spesa per difesa e sicurezza al 5% del PIL entro il 2035 (vertice dell'Aia, 2025)"],
+  ["Segretario generale","Mark Rutte (Paesi Bassi)"],"Ultimo vertice: Ankara, 7–8 luglio 2026. Il prossimo si terrà in Albania nel 2027."]
+];
+const SDG=[["#E5243B","Sconfiggere la povertà"],["#DDA63A","Sconfiggere la fame"],["#4C9F38","Salute e benessere"],["#C5192D","Istruzione di qualità"],["#FF3A21","Parità di genere"],["#26BDE2","Acqua pulita e servizi igienico-sanitari"],["#FCC30B","Energia pulita e accessibile"],["#A21942","Lavoro dignitoso e crescita economica"],["#FD6925","Imprese, innovazione e infrastrutture"],["#DD1367","Ridurre le disuguaglianze"],["#FD9D24","Città e comunità sostenibili"],["#BF8B2E","Consumo e produzione responsabili"],["#3F7E44","Lotta contro il cambiamento climatico"],["#0A97D9","Vita sott'acqua"],["#56C02B","Vita sulla terra"],["#00689D","Pace, giustizia e istituzioni solide"],["#19486A","Partnership per gli obiettivi"]];
+const CANDS=[
+ ["Rafael Mariano Grossi","Argentina · direttore generale dell'AIEA"],
+ ["Rebeca Grynspan","Costa Rica · segretaria generale dell'UNCTAD"],
+ ["María Fernanda Espinosa","Ecuador · ex presidente dell'Assemblea Generale (proposta da Antigua e Barbuda)"],
+ ["Carolyn Rodrigues-Birkett","Guyana · ex ministra degli Esteri"],
+ ["Ivonne A-Baki","Ecuador · diplomatica (proposta da Tonga)"],
+ ["Macky Sall","Senegal · ex presidente (proposto dal Burundi)"],
+ ["Lana Nusseibeh","Emirati Arabi Uniti · diplomatica"],
+ ["Feridun Sinirlioğlu","Turchia · segretario generale dell'OSCE"]
+];
+const STARTERS=["Prima di questo lavoro pensavo che l'Europa fosse…","Il diritto europeo che sento più mio è…","Mi ha colpito scoprire che…","Essere cittadino del mondo per me significa…","Un problema globale che mi sta a cuore è…","Nel mio piccolo, posso…"];
+const KC=[
+ ["Competenza alfabetica funzionale","Leggere e capire fonti istituzionali e articoli di giornale; scrivere testi chiari e una riflessione argomentata."],
+ ["Competenza multilinguistica","Usare fonti in inglese (siti ONU, NATO, agenzie di stampa) e capire i nomi ufficiali e le sigle internazionali (UN, WHO, NATO/OTAN)."],
+ ["Competenza matematica e in scienze, tecnologie e ingegneria","Leggere dati e percentuali: seggi, maggioranza qualificata (55% e 65%), inflazione al 2%, spesa per la difesa in rapporto al PIL."],
+ ["Competenza digitale","Realizzare un prodotto digitale interattivo, cercare informazioni affidabili, verificarle su più fonti e citarle."],
+ ["Competenza personale, sociale e capacità di imparare a imparare","Organizzare il lavoro in autonomia, scegliere cosa approfondire e riflettere su ciò che si è imparato."],
+ ["Competenza in materia di cittadinanza","Conoscere istituzioni, diritti e doveri; capire come si prendono le decisioni in UE e ONU; confrontare punti di vista diversi."],
+ ["Competenza imprenditoriale","Individuare le opportunità per i giovani (Erasmus+, Corpo di solidarietà, Garanzia Giovani) e immaginare soluzioni ai problemi dei Paesi."],
+ ["Competenza in materia di consapevolezza ed espressione culturali","Riconoscere il patrimonio comune europeo e mondiale (UNESCO, motto «Unita nella diversità») e curare la grafica del prodotto."]
+];
+
+/* ===================== MAPPA ===================== */
+const svg = d3.select("#map");
+const W = ()=>document.getElementById("map").clientWidth||window.innerWidth, H = ()=>document.getElementById("map").clientHeight||window.innerHeight;
+const isMobile = ()=>window.innerWidth<=820;
+let projection, path, gRoot, gMap, gTok, zoom, feats=[], natoFeat={}, selected=null, curK=1;
+
+function rewind(f){ // forza l'avvolgimento compatibile con d3
+  const fix = poly => (d3.geoArea({type:"Polygon",coordinates:poly})>2*Math.PI) ? poly.map(r=>r.slice().reverse()) : poly;
+  const g=f.geometry; if(!g) return f;
+  if(g.type==="Polygon") g.coordinates=fix(g.coordinates);
+  else if(g.type==="MultiPolygon") g.coordinates=g.coordinates.map(fix);
+  return f;
+}
+function mainPart(f){
+  const g=f.geometry; if(g.type!=="MultiPolygon") return f;
+  let best=null,ba=-1;
+  for(const p of g.coordinates){const a=d3.geoArea({type:"Polygon",coordinates:p}); if(a>ba){ba=a;best=p;}}
+  return {type:"Feature",properties:f.properties,geometry:{type:"Polygon",coordinates:best}};
+}
+function fid(f){return (f.id||f.properties?.id||f.properties?.ISO_A2||"").toUpperCase();}
+
+async function loadGeo(){
+  const srcs=["https://cdn.jsdelivr.net/npm/@amcharts/amcharts5-geodata@5/worldLow.js",
+              "https://cdn.jsdelivr.net/npm/@amcharts/amcharts4-geodata@4/worldLow.js"];
+  for(const u of srcs){ try{ const m=await import(u); const g=m.default||m; if(g&&g.features&&g.features.length) return g; }catch(e){} }
+  return null;
+}
+
+function defs(){
+  const d=svg.append("defs");
+  const p=d.append("pattern").attr("id","waves").attr("width",40).attr("height",20).attr("patternUnits","userSpaceOnUse");
+  p.append("rect").attr("width",40).attr("height",20).attr("fill","#a9c3c8");
+  p.append("path").attr("d","M0 10 Q10 4 20 10 T40 10").attr("fill","none").attr("stroke","#94b0b6").attr("stroke-width",1.2);
+  const h=d.append("pattern").attr("id","hatch").attr("width",6).attr("height",6).attr("patternUnits","userSpaceOnUse").attr("patternTransform","rotate(45)");
+  h.append("line").attr("x1",0).attr("y1",0).attr("x2",0).attr("y2",6).attr("stroke","rgba(0,0,0,.10)").attr("stroke-width",2);
+  const f=d.append("filter").attr("id","rough");
+  f.append("feTurbulence").attr("baseFrequency",.9).attr("numOctaves",1).attr("result","n");
+  f.append("feDisplacementMap").attr("in","SourceGraphic").attr("in2","n").attr("scale",1.4);
+}
+
+function build(geo){
+  svg.selectAll("*").remove(); defs();
+  svg.append("rect").attr("width","100%").attr("height","100%").attr("fill","url(#waves)");
+  gRoot=svg.append("g"); gMap=gRoot.append("g");
+  feats=geo.features.map(f=>rewind(JSON.parse(JSON.stringify(f))));
+  natoFeat={};
+  feats.forEach(f=>{const id=fid(f); if(BY[id]) natoFeat[id]=f;});
+
+  // proiezione centrata sull'Atlantico del Nord
+  projection=d3.geoAzimuthalEqualArea().rotate([20,-50]).clipAngle(96);
+  const fitSet={type:"FeatureCollection",features:Object.values(natoFeat).map(mainPart)};
+  const top=isMobile()?70:80, bot=isMobile()?60:60;
+  projection.fitExtent([[10,top],[W()-10,H()-bot]],fitSet);
+  path=d3.geoPath(projection);
+
+  gMap.selectAll("path.land").data(feats.filter(f=>!BY[fid(f)]&&!EXTRA[fid(f)])).join("path")
+    .attr("class","land").attr("d",path);
+
+  // rotte atlantiche stile Risiko
+  const routes=[[[-60,47],[-38,62]],[[-38,62],[-19,64.8]],[[-19,64.8],[-4,57]],[[-74,40.7],[-9.1,38.7]]];
+  gMap.selectAll("path.route").data(routes).join("path").attr("class","route")
+    .attr("d",d=>path({type:"LineString",coordinates:d}));
+
+  const natoList=feats.filter(f=>BY[fid(f)]||EXTRA[fid(f)]);
+  gMap.selectAll("path.nato").data(natoList).join("path")
+    .attr("class","nato").attr("d",path)
+    .attr("fill",f=>GROUPS[BY[EXTRA[fid(f)]||fid(f)].g].c)
+    .attr("data-iso",f=>EXTRA[fid(f)]||fid(f))
+    .attr("filter","url(#rough)")
+    .on("click",(e,f)=>{e.stopPropagation(); select(EXTRA[fid(f)]||fid(f));});
+  gMap.selectAll("path.hat").data(natoList).join("path").attr("class","hat").attr("d",path)
+    .attr("fill","url(#hatch)").attr("pointer-events","none");
+
+  // segnalini (armate)
+  gTok=gRoot.append("g");
+  const tok=gTok.selectAll("g.token").data(ORDER.filter(i=>natoFeat[i])).join("g").attr("class","token")
+    .attr("data-iso",d=>d)
+    .on("click",(e,d)=>{e.stopPropagation(); select(d);});
+  tok.each(function(d){
+    let c=path.centroid(mainPart(natoFeat[d]));
+    if(d==="NO") c=projection([9.5,61]); if(d==="US") c=projection([-98,39]); if(d==="CA") c=projection([-100,56]);
+    if(d==="HR") c=projection([16.2,45.4]); if(d==="GR") c=projection([22,39.6]); if(d==="FI") c=projection([26,63]);
+    if(d==="SE") c=projection([15.5,61]); if(d==="IT") c=projection([12.8,42.5]);
+    d3.select(this).attr("data-x",c[0]).attr("data-y",c[1]);
+  });
+  tok.append("circle").attr("r",10).attr("fill",d=>GROUPS[BY[d].g].c);
+  tok.append("text").text(d=>d);
+  placeTokens(1);
+
+  zoom=d3.zoom().scaleExtent([.8,60]).on("zoom",e=>{
+    gMap.attr("transform",e.transform); curK=e.transform.k;
+    gTok.attr("transform",e.transform); placeTokens(e.transform.k);
+  });
+  svg.call(zoom).on("dblclick.zoom",null);
+  svg.on("click",()=>{ if(selected) closePanel(); });
+  d3.select("#msg").remove();
+}
+function placeTokens(k){
+  gTok.selectAll("g.token").attr("transform",function(){
+    const x=+this.getAttribute("data-x"), y=+this.getAttribute("data-y");
+    const s=Math.max(.35,Math.min(1.3,1/Math.sqrt(k)))/k*Math.sqrt(Math.min(k,4));
+    return `translate(${x},${y}) scale(${s})`;
+  });
+}
+
+/* ============ SELEZIONE ============ */
+function select(iso){
+  const d=BY[iso]; if(!d) return;
+  selected=iso;
+  svg.classed("dim",true);
+  svg.selectAll(".nato").classed("sel",function(){return this.getAttribute("data-iso")===iso;});
+  svg.selectAll(".token").classed("sel",function(){return this.getAttribute("data-iso")===iso;});
+  svg.selectAll(".nato.sel").raise();
+  if(natoFeat[iso] && zoom){
+    const [[x0,y0],[x1,y1]]=path.bounds(mainPart(natoFeat[iso]));
+    let vx=0,vy=0,vw=W(),vh=H();
+    if(isMobile()){ vy=60; vh=window.innerHeight*0.38-66; } else { vw=W()-430; vy=70; vh=H()-130; }
+    const k=Math.min(40,0.8/Math.max((x1-x0)/vw,(y1-y0)/vh));
+    const cx=(x0+x1)/2, cy=(y0+y1)/2;
+    const t=d3.zoomIdentity.translate(vx+vw/2,vy+vh/2).scale(k).translate(-cx,-cy);
+    svg.transition().duration(1100).ease(d3.easeCubicInOut).call(zoom.transform,t);
+  }
+  renderPanel(d);
+  setTimeout(()=>document.getElementById("panel").classList.add("open"), natoFeat[iso]?350:0);
+  const chip=document.querySelector(`.chip[data-iso="${iso}"]`); if(chip) chip.scrollIntoView({behavior:"smooth",inline:"center",block:"nearest"});
+}
+function closePanel(instant){
+  selected=null;
+  document.getElementById("panel").classList.remove("open");
+  svg.classed("dim",false); svg.selectAll(".sel").classed("sel",false);
+  if(zoom){ if(instant===true) svg.interrupt().call(zoom.transform,d3.zoomIdentity);
+    else svg.transition().duration(900).ease(d3.easeCubicInOut).call(zoom.transform,d3.zoomIdentity); }
+}
+function step(dir){
+  const i=ORDER.indexOf(selected); select(ORDER[(i+dir+ORDER.length)%ORDER.length]);
+}
+
+function silhouette(iso){
+  if(!natoFeat[iso]) return `<svg viewBox="0 0 100 100"><text x="50" y="55" text-anchor="middle" font-family="Cinzel" font-size="20">${iso}</text></svg>`;
+  const f=mainPart(natoFeat[iso]);
+  const pr=d3.geoMercator().fitExtent([[6,6],[94,94]],f);
+  const p=d3.geoPath(pr)(f);
+  const col=GROUPS[BY[iso].g].c;
+  return `<svg viewBox="0 0 100 100"><path d="${p}" fill="${col}" stroke="#2b2118" stroke-width="1.6"/><path d="${p}" fill="url(#hatch)"/></svg>`;
+}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+function renderPanel(d){
+  const G=GROUPS[d.g];
+  const li=(arr,cls)=>`<ol class="items ${cls}">${arr.map((x,j)=>`<li style="animation-delay:${.35+j*.12}s"><b>${esc(x[0])}</b>${esc(x[1])}</li>`).join("")}</ol>`;
+  const p=document.getElementById("panel");
+  p.innerHTML=`<div class="pin">
+    ${isMobile()?'<div class="grab"></div>':''}
+    <button class="xbtn" aria-label="Chiudi" onclick="closePanel()">✕</button>
+    <div class="ptop">
+      <div class="card">${silhouette(d.iso)}<div class="cy">★ NATO ${d.year}</div></div>
+      <div class="ptitle"><h2>${esc(d.name)}</h2>
+        <div class="sub">Capitale: ${esc(d.cap)}</div>
+        <span class="badge" style="background:${G.c}">${esc(G.n)}</span></div>
+    </div>
+    <h3>👑 Vertici</h3>
+    <div class="leaders">
+      <div class="leader"><div class="r">${esc(d.hos[0])}</div><div class="n">${esc(d.hos[1])}</div></div>
+      ${d.hog?`<div class="leader"><div class="r">${esc(d.hog[0])}</div><div class="n">${esc(d.hog[1])}</div></div>`:""}
+    </div>
+    ${d.note?`<div class="note">${esc(d.note)}</div>`:""}
+    <h3>⚠ Problematiche</h3>${li(d.prob,"prob")}
+    <h3>🛠 Possibili soluzioni</h3>${li(d.sol,"sol")}
+    <div class="nav"><button onclick="step(-1)">◀ Precedente</button><button onclick="step(1)">Successivo ▶</button></div>
+    <div class="disc">Le soluzioni sono opzioni discusse nel dibattito pubblico ed economico, non indicazioni di parte: ognuna ha costi e sostenitori diversi. Vertici aggiornati al ${AGG}.</div>
+  </div>`;
+  p.scrollTop=0;
+}
+
+
+/* ============ UI ============ */
+function chips(){
+  const s=document.getElementById("strip");
+  s.innerHTML=ORDER.map(i=>`<button class="chip" data-iso="${i}" style="background:${GROUPS[BY[i].g].c}">${esc(BY[i].name)}</button>`).join("");
+  s.querySelectorAll(".chip").forEach(b=>b.onclick=()=>select(b.dataset.iso));
+}
+function info(){
+  const box=document.getElementById("infoBox");
+  box.innerHTML=`<h2>Legenda del tabellone</h2>
+   ${Object.values(GROUPS).map(g=>`<div class="leg"><i style="background:${g.c}"></i>${g.n}</div>`).join("")}
+   <div class="leg"><i style="background:#d9c9a3"></i>Paesi non NATO</div>
+   <p style="font-size:14px;line-height:1.45">Come in Risiko, gli alleati sono raggruppati in “continenti” (raggruppamenti geografici, non ufficiali). Ogni segnalino indica un membro; le linee tratteggiate sono le rotte atlantiche che uniscono le due sponde. La Groenlandia è colorata insieme alla Danimarca.</p>
+   <p style="font-size:14px;line-height:1.45"><b>Segretario generale NATO:</b> Mark Rutte · <b>Membri:</b> 32 · Ultimo vertice: Ankara, 7–8 luglio 2026.</p>
+   <p style="font-size:13px;font-style:italic;color:#6b5a44">Vertici verificati su fonti giornalistiche al ${AGG}. In Svezia il governo è in formazione e in Spagna si vota il 29 novembre: i dati potrebbero cambiare presto.</p>
+   <button class="xbtn" style="float:none;position:static;margin:6px 0 0" onclick="document.getElementById('info').classList.remove('show')">✕</button>`;
+  document.getElementById("infoBtn").onclick=()=>document.getElementById("info").classList.add("show");
+  document.getElementById("info").onclick=e=>{ if(e.target.id==="info") e.currentTarget.classList.remove("show"); };
+}
+
+
+/* ===================== RENDER GUIDA ===================== */
+function instCard(d,openFirst){
+  const [ic,col,nm,sub,seat,comp,funcs,lead,note]=d;
+  return `<details class="inst"${openFirst?" open":""}><summary><div class="ic" style="background:${col}">${ic}</div>
+   <div class="nm"><b>${nm}</b><small>${sub}</small></div><span class="arr">▸</span></summary>
+   <div class="body"><dl class="facts"><dt>Sede</dt><dd>${seat}</dd><dt>Chi ne fa parte</dt><dd>${comp}</dd></dl>
+   <b style="font-size:14px">Che cosa fa</b><ul>${funcs.map(f=>`<li>${f}</li>`).join("")}</ul>
+   <div class="lead-box">👤 <span><b>${lead[0]}:</b> ${lead[1]}</span></div>
+   ${note?`<p class="muted" style="margin:8px 0 0">ℹ️ ${note}</p>`:""}
+   ${nm.startsWith("NATO")?`<div class="row"><button class="btn pri" data-go="mappa">🗺️ Apri la mappa NATO</button></div>`:""}
+   </div></details>`;
+}
+function renderGuide(){
+  document.getElementById("timeline").innerHTML=TIMELINE.map(t=>`<div class="ev"><div class="y">${t[0]}</div><div class="t">${t[1]}</div></div>`).join("");
+  document.getElementById("values").innerHTML=VALUES.map(v=>`<div class="val"><span>${v[0]}</span>${v[1]}</div>`).join("");
+  document.getElementById("rights").innerHTML=RIGHTS.map(r=>`<li>${r}</li>`).join("");
+  document.getElementById("insts").innerHTML=INST.map((d,i)=>instCard(d,i===0)).join("");
+  document.getElementById("steps").innerHTML=STEPS.map((s,i)=>`${i?'<div class="down">▼</div>':''}<div class="step"><div class="n">${i+1}</div><div><span class="who">${s[0]}</span><b>${s[1]}</b><span style="font-size:14.5px">${s[2]}</span></div></div>`).join("");
+  document.getElementById("youth").innerHTML=YOUTH.map(y=>`<div class="c"><span class="age">${y[1]}</span><b>${y[0]}</b><p>${y[2]}</p></div>`).join("");
+  document.getElementById("organs").innerHTML=ORGANS.map((d,i)=>instCard(d,i===0)).join("");
+  document.getElementById("agencies").innerHTML=AGENCIES.map(d=>instCard(d,false)).join("");
+  document.getElementById("sdg").innerHTML=SDG.map((s,i)=>`<div style="background:${s[0]}"><b>${i+1}</b>${s[1]}</div>`).join("");
+  document.getElementById("cands").innerHTML=CANDS.map(c=>`<div><b>${c[0]}</b><small>${c[1]}</small></div>`).join("");
+  document.getElementById("kc").innerHTML=KC.map((k,i)=>`<tr><td><span class="n">${i+1}</span>${k[0]}</td><td>${k[1]}</td></tr>`).join("");
+  document.querySelectorAll(".view .wrap").forEach(w=>w.insertAdjacentHTML("beforeend",'<p class="sign">✒ Giuseppe Castrovillari · Classe 5A · Educazione civica</p>'));
+  const io=("IntersectionObserver" in window)?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}}),{threshold:.2}):null;
+  document.querySelectorAll(".tl .ev").forEach(el=>io?io.observe(el):el.classList.add("in"));
+}
+
+/* ===================== STORAGE (solo questo browser) ===================== */
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+function toast(t){const el=document.getElementById("toast");el.textContent=t;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),1800);}
+function setupReflection(){}
+
+/* ===================== NAVIGAZIONE ===================== */
+const VIEWS=["home","ue","onu","mappa","attualita","riflessione","competenze"];
+let mapBuilt=false, cur=null;
+function show(v){
+  if(!VIEWS.includes(v)) v="home";
+  if(cur==="mappa" && v!=="mappa"){ svg && svg.interrupt && svg.interrupt(); if(selected) closePanel(true); }
+  cur=v;
+  document.querySelectorAll(".view").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.go===v));
+  const el=document.getElementById("v-"+v); if(el) el.scrollTop=0;
+  if(v==="mappa"){ if(!mapBuilt){ mapBuilt=true; initMap(); } else if(GEO && needRebuild){ needRebuild=false; build(GEO);} }
+}
+function go(v){ if(location.hash.slice(1)===v) show(v); else location.hash=v; }
+document.addEventListener("click",e=>{const t=e.target.closest("[data-go]"); if(t){e.preventDefault(); go(t.dataset.go);}});
+window.addEventListener("hashchange",()=>show(location.hash.slice(1)));
+
+/* ===================== AVVIO ===================== */
+let GEO=null, needRebuild=false;
+async function initMap(){
+  chips(); info();
+  GEO=await loadGeo();
+  if(!GEO){ document.getElementById("msg").textContent="Mappa non disponibile: usa l'elenco dei Paesi in basso."; return; }
+  build(GEO);
+}
+let rt; window.addEventListener("resize",()=>{clearTimeout(rt); rt=setTimeout(()=>{ if(!GEO) return; if(cur!=="mappa"){needRebuild=true;return;} const s=selected; build(GEO); if(s) select(s); },250);});
+renderGuide(); setupReflection();
+show(location.hash.slice(1)||"home");
+</script>
+</body>
+</html>
